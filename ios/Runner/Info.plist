@@ -45,5 +45,8 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- Biometric authentication usage description -->
+	<key>NSFaceIDUsageDescription</key>
+	<string>Use Face ID to authenticate and access your secure password vault</string>
 </dict>
 </plist>

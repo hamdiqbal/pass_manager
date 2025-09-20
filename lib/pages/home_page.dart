@@ -25,7 +25,55 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout, color: Colors.white),
             onPressed: () async {
-              await authService.signOut();
+              try {
+                print('Sign out button pressed');
+                
+                // Show loading indicator
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (BuildContext context) {
+                    return const Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF4A90E2),
+                      ),
+                    );
+                  },
+                );
+
+                await authService.signOut();
+                print('Sign out completed');
+                
+                // Close loading dialog
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+                
+                // Force navigation to login page
+                if (context.mounted) {
+                  Navigator.pushNamedAndRemoveUntil(
+                    context, 
+                    '/', 
+                    (route) => false
+                  );
+                }
+              } catch (e) {
+                print('Sign out error: $e');
+                // Close loading dialog if open
+                if (Navigator.canPop(context)) {
+                  Navigator.pop(context);
+                }
+                
+                // Show error message
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error signing out: $e'),
+                      backgroundColor: Colors.red[600],
+                    ),
+                  );
+                }
+              }
             },
           ),
         ],
