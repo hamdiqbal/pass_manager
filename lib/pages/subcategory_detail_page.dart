@@ -1,0 +1,487 @@
+import 'package:flutter/material.dart';
+import '../models/subcategory.dart';
+import '../models/account.dart';
+import '../models/master_branch.dart';
+import '../services/firebase_service.dart';
+import 'add_account_page.dart';
+import 'account_detail_page.dart';
+
+class SubcategoryDetailPage extends StatefulWidget {
+  final Subcategory subcategory;
+  final String masterBranchId;
+  final MasterBranch? masterBranch;
+
+  const SubcategoryDetailPage({
+    super.key,
+    required this.subcategory,
+    required this.masterBranchId,
+    this.masterBranch,
+  });
+
+  @override
+  State<SubcategoryDetailPage> createState() => _SubcategoryDetailPageState();
+}
+
+class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
+  late Subcategory currentSubcategory;
+  final FirebaseService _firebaseService = FirebaseService();
+
+  @override
+  void initState() {
+    super.initState();
+    currentSubcategory = widget.subcategory;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: const Color(0xFF0F1419),
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF1A1F2E),
+        elevation: 0,
+        title: Text(
+          currentSubcategory.name,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context, currentSubcategory),
+        ),
+      ),
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Subcategory Info Card
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1A1F2E),
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.grey[800]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF4A90E2).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.category,
+                              color: Color(0xFF4A90E2),
+                              size: 32,
+                            ),
+                          ),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  currentSubcategory.name,
+                                  style: const TextStyle(
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  currentSubcategory.additionalField,
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    color: Colors.grey[400],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
+                      const Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        currentSubcategory.description,
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[300],
+                          height: 1.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 32),
+                
+                // Add Account Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: _navigateToAddAccount,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF4A90E2),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: const Text(
+                      'Add Account',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+                
+                // Accounts List
+                if (currentSubcategory.accounts.isNotEmpty) ...[
+                  const Text(
+                    'Accounts',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: currentSubcategory.accounts.length,
+                    itemBuilder: (context, index) {
+                      final account = currentSubcategory.accounts[index];
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: Card(
+                          color: const Color(0xFF1A1F2E),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            side: BorderSide(
+                              color: Colors.grey[800]!,
+                              width: 1,
+                            ),
+                          ),
+                          child: ListTile(
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF4A90E2).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.account_circle,
+                                color: Color(0xFF4A90E2),
+                              ),
+                            ),
+                            title: Text(
+                              account.name,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              account.username,
+                              style: TextStyle(
+                                color: Colors.grey[400],
+                              ),
+                            ),
+                            trailing: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                    size: 16,
+                                  ),
+                                  onPressed: () => _deleteAccount(account),
+                                  padding: const EdgeInsets.all(4),
+                                  constraints: const BoxConstraints(),
+                                ),
+                                const SizedBox(width: 4),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  color: Color(0xFF4A90E2),
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                            onTap: () => _showAccountDetails(account),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ] else ...[
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF1A1F2E),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: Colors.grey[800]!,
+                        width: 1,
+                      ),
+                    ),
+                    child: Column(
+                      children: [
+                        Icon(
+                          Icons.account_circle_outlined,
+                          color: Colors.grey[600],
+                          size: 48,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'No Accounts Yet',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[300],
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Add your first account to get started',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey[500],
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _navigateToAddAccount() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const AddAccountPage(),
+      ),
+    );
+
+    if (result != null && result is Account) {
+      try {
+        // Save to Firebase
+        await _firebaseService.addAccountToSubcategory(
+          widget.masterBranchId,
+          currentSubcategory.id,
+          result,
+        );
+        
+        // Update local state
+        setState(() {
+          currentSubcategory = currentSubcategory.copyWith(
+            accounts: [...currentSubcategory.accounts, result],
+          );
+        });
+        
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account saved successfully!'),
+              backgroundColor: Color(0xFF4A90E2),
+            ),
+          );
+        }
+      } catch (e) {
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error saving account: $e'),
+              backgroundColor: Colors.red[600],
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _loadSubcategory() async {
+    try {
+      final masterBranches = await _firebaseService.getMasterBranches();
+      final masterBranch = masterBranches.firstWhere(
+        (mb) => mb.id == widget.masterBranchId,
+      );
+      final updatedSubcategory = masterBranch.subcategories.firstWhere(
+        (sub) => sub.id == widget.subcategory.id,
+      );
+      
+      setState(() {
+        currentSubcategory = updatedSubcategory;
+      });
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error loading subcategory: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  void _showAccountDetails(Account account) async {
+    MasterBranch? masterBranch = widget.masterBranch;
+    
+    // If masterBranch is not provided, fetch it
+    if (masterBranch == null) {
+      try {
+        final masterBranches = await _firebaseService.getMasterBranches();
+        masterBranch = masterBranches.firstWhere(
+          (mb) => mb.id == widget.masterBranchId,
+        );
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error loading master branch: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        return;
+      }
+    }
+    
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AccountDetailPage(
+          account: account,
+          subcategory: widget.subcategory,
+          masterBranch: masterBranch!,
+        ),
+      ),
+    ).then((result) {
+      if (result == true) {
+        // Account was updated/deleted, refresh the page
+        _loadSubcategory();
+      }
+    });
+  }
+
+  Future<bool> _showDeleteConfirmation(BuildContext context, String title, String content) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: const Color(0xFF1A1F2E),
+          title: Text(
+            title,
+            style: const TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            content,
+            style: TextStyle(color: Colors.grey[300]),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Color(0xFF4A90E2)),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+  }
+
+  Future<void> _deleteAccount(Account account) async {
+    final confirmed = await _showDeleteConfirmation(
+      context,
+      'Delete Account',
+      'Are you sure you want to delete "${account.name}"? This action cannot be undone.',
+    );
+
+    if (confirmed) {
+      try {
+        // Delete from Firebase
+        await FirebaseService().deleteAccountFromSubcategory(
+          widget.masterBranchId,
+          currentSubcategory.id,
+          account.id,
+        );
+        
+        // Update local state
+        setState(() {
+          currentSubcategory = currentSubcategory.copyWith(
+            accounts: currentSubcategory.accounts
+                .where((acc) => acc.id != account.id)
+                .toList(),
+          );
+        });
+        
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account deleted successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error deleting account: $e'),
+              backgroundColor: Colors.red[600],
+            ),
+          );
+        }
+      }
+    }
+  }
+}
