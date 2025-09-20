@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:pass_manager/services/biometric_service.dart';
 import 'package:pass_manager/services/auth_service.dart';
 
@@ -16,23 +17,40 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
   bool _isLoading = false;
   bool _showEnableBiometric = false;
   String _biometricType = 'Biometric';
+  String? _currentUserId;
 
   @override
   void initState() {
     super.initState();
-    _checkBiometricAvailability();
+    _initializeUser();
+  }
+
+  Future<void> _initializeUser() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      _currentUserId = user.uid;
+      _checkBiometricAvailability();
+    } else {
+      // No user, shouldn't happen but go to login
+      Navigator.pushReplacementNamed(context, '/');
+    }
   }
 
   Future<void> _checkBiometricAvailability() async {
+    if (_currentUserId == null) return;
+    
     try {
       final isAvailable = await _biometricService.isBiometricAvailable();
       final hasEnrolled = await _biometricService.hasEnrolledBiometrics();
-      final isEnabled = await _biometricService.isBiometricEnabled();
+      final setupCompleted = await _biometricService.isBiometricSetupCompleted(_currentUserId!);
+      final isEnabled = await _biometricService.isBiometricEnabled(_currentUserId!);
       
-      print('Biometric available: $isAvailable, enrolled: $hasEnrolled, enabled: $isEnabled');
+      print('User: $_currentUserId - Biometric available: $isAvailable, enrolled: $hasEnrolled, setup completed: $setupCompleted, enabled: $isEnabled');
       
       if (!isAvailable || !hasEnrolled) {
         print('Biometric not available or not enrolled, proceeding to home');
+        await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
+        await _biometricService.setBiometricEnabled(_currentUserId!, false);
         _proceedToHome();
         return;
       }
@@ -40,10 +58,10 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
       final types = await _biometricService.getAvailableBiometrics();
       setState(() {
         _biometricType = _biometricService.getBiometricTypeString(types);
-        _showEnableBiometric = !isEnabled;
+        _showEnableBiometric = !setupCompleted || !isEnabled;
       });
       
-      if (isEnabled) {
+      if (setupCompleted && isEnabled) {
         // Automatically prompt for biometric if already enabled
         _authenticateWithBiometric();
       }
@@ -82,6 +100,8 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
   }
 
   Future<void> _enableBiometricAndAuthenticate() async {
+    if (_currentUserId == null) return;
+    
     setState(() {
       _isLoading = true;
     });
@@ -92,7 +112,8 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
       
       if (authenticated) {
         print('Biometric authentication successful, enabling biometric');
-        await _biometricService.setBiometricEnabled(true);
+        await _biometricService.setBiometricEnabled(_currentUserId!, true);
+        await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
         _proceedToHome();
       } else {
         print('Biometric authentication failed during enable');
@@ -164,7 +185,10 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
   }
 
   void _skipBiometric() async {
-    await _biometricService.setBiometricEnabled(false);
+    if (_currentUserId == null) return;
+    
+    await _biometricService.setBiometricEnabled(_currentUserId!, false);
+    await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
     _proceedToHome();
   }
 

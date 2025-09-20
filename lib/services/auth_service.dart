@@ -1,7 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:pass_manager/services/user_session_service.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final UserSessionService _sessionService = UserSessionService();
 
   // Get current user
   User? get currentUser => _auth.currentUser;
@@ -16,6 +18,12 @@ class AuthService {
         email: email,
         password: password,
       );
+      
+      // Store user session information
+      if (result.user != null) {
+        await _sessionService.storeLastUser(result.user!.uid, email);
+      }
+      
       return result;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -29,6 +37,12 @@ class AuthService {
         email: email,
         password: password,
       );
+      
+      // Store user session information
+      if (result.user != null) {
+        await _sessionService.storeLastUser(result.user!.uid, email);
+      }
+      
       return result;
     } on FirebaseAuthException catch (e) {
       throw _handleAuthException(e);
@@ -38,6 +52,8 @@ class AuthService {
   // Sign out
   Future<void> signOut() async {
     try {
+      // Clear stored user session on sign out
+      await _sessionService.clearStoredUser();
       return await _auth.signOut();
     } catch (e) {
       throw Exception('Error signing out: $e');

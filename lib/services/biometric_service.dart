@@ -98,15 +98,27 @@ class BiometricService {
   }
 
   // Check if user has enabled biometric authentication for the app
-  Future<bool> isBiometricEnabled() async {
+  Future<bool> isBiometricEnabled(String userId) async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getBool('biometric_enabled') ?? false;
+    return prefs.getBool('biometric_enabled_$userId') ?? false;
   }
 
-  // Enable/disable biometric authentication
-  Future<void> setBiometricEnabled(bool enabled) async {
+  // Enable/disable biometric authentication for specific user
+  Future<void> setBiometricEnabled(String userId, bool enabled) async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('biometric_enabled', enabled);
+    await prefs.setBool('biometric_enabled_$userId', enabled);
+  }
+
+  // Check if biometric has been set up for a specific user
+  Future<bool> isBiometricSetupCompleted(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('biometric_setup_completed_$userId') ?? false;
+  }
+
+  // Mark biometric setup as completed for a user
+  Future<void> setBiometricSetupCompleted(String userId, bool completed) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('biometric_setup_completed_$userId', completed);
   }
 
   // Get biometric type string for display
