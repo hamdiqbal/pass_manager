@@ -334,43 +334,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 24),
                 ],
-                Container(
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFF1A1F2E),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.grey[800]!,
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.construction,
-                        color: Colors.grey[600],
-                        size: 48,
-                      ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'Password Manager Features',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.grey[300],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Coming Soon!',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[500],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
               ],
             ),
           ),
