@@ -238,26 +238,10 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                                 color: Colors.grey[600],
                               ),
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                    size: 16,
-                                  ),
-                                  onPressed: () => _deleteAccount(account),
-                                  padding: const EdgeInsets.all(4),
-                                  constraints: const BoxConstraints(),
-                                ),
-                                const SizedBox(width: 4),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Color(0xFF3E2411),
-                                  size: 16,
-                                ),
-                              ],
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Color(0xFF3E2411),
+                              size: 16,
                             ),
                             onTap: () => _showAccountDetails(account),
                           ),
