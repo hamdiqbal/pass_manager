@@ -56,121 +56,103 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Master Branch Info Card
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(
-                      color: Colors.grey[300]!,
-                      width: 1,
-                    ),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Header with edit button
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // Header with edit button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(
+                      child: Row(
                         children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Container(
-                                  padding: const EdgeInsets.all(12),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF3E2411).withOpacity(0.2),
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Icon(
-                                    Icons.folder,
-                                    color: Color(0xFF3E2411),
-                                    size: 32,
-                                  ),
-                                ),
-                                const SizedBox(width: 16),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        currentMasterBranch.name,
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                                const SizedBox(height: 4),
-                                Text(
-                                  currentMasterBranch.additionalField,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.grey[400],
-                                  ),
-                                ),
-                                    ],
-                                  ),
-                                ),
-                              ],
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3E2411).withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.folder,
+                              color: Color(0xFF3E2411),
+                              size: 32,
                             ),
                           ),
-                          // Edit button
-                          Container(
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF3E2411),
-                              borderRadius: BorderRadius.circular(8),
+                          const SizedBox(width: 16),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  currentMasterBranch.name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
-                            child: IconButton(
-                              icon: const Icon(Icons.edit, color: Colors.white, size: 20),
-                              onPressed: _editMasterBranch,
-                              padding: const EdgeInsets.all(8),
-                              constraints: const BoxConstraints(
-                                minWidth: 36,
-                                minHeight: 36,
-                              ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            currentMasterBranch.additionalField,
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey[400],
+                            ),
+                          ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Description',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                    ),
+                    // Edit button
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF3E2411),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.white, size: 20),
+                        onPressed: _editMasterBranch,
+                        padding: const EdgeInsets.all(8),
+                        constraints: const BoxConstraints(
+                          minWidth: 36,
+                          minHeight: 36,
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Text(
-                        currentMasterBranch.description,
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                          height: 1.5,
-                        ),
-                      ),
-                      
-                      // Custom Fields Display
-                      if (currentMasterBranch.customFields.isNotEmpty) ...[
-                        const SizedBox(height: 24),
-                        const Text(
-                          'Custom Fields',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        ...currentMasterBranch.customFields.map((field) => _buildCustomFieldDisplay(field)).toList(),
-                      ],
-                    ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                const Text(
+                  'Description',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
                 ),
+                const SizedBox(height: 8),
+                Text(
+                  currentMasterBranch.description,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: Colors.grey[600],
+                    height: 1.5,
+                  ),
+                ),
+                
+                // Custom Fields Display
+                if (currentMasterBranch.customFields.isNotEmpty) ...[
+                  const SizedBox(height: 24),
+                  const Text(
+                    'Custom Fields',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ...currentMasterBranch.customFields.map((field) => _buildCustomFieldDisplay(field)).toList(),
+                ],
                 const SizedBox(height: 32),
                 
                 // Add Subcategory Button
