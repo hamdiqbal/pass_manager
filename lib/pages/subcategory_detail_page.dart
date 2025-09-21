@@ -53,12 +53,6 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context, currentSubcategory),
         ),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: Colors.white),
-            onPressed: _editSubcategory,
-          ),
-        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -120,6 +114,17 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                               ],
                             ),
                           ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.edit,
+                              color: Color(0xFF3E2411),
+                              size: 20,
+                            ),
+                            onPressed: _editSubcategory,
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(),
+                          ),
+                          const SizedBox(width: 8),
                           IconButton(
                             icon: const Icon(
                               Icons.delete,
