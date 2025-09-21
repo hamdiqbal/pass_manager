@@ -4,6 +4,7 @@ import '../models/subcategory.dart';
 import '../services/firebase_service.dart';
 import 'subcategory_page.dart';
 import 'subcategory_detail_page.dart';
+import 'master_branch_page.dart';
 
 class MasterBranchDetailPage extends StatefulWidget {
   final MasterBranch masterBranch;
@@ -45,6 +46,12 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context, currentMasterBranch),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.white),
+            onPressed: _editMasterBranch,
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -167,78 +174,90 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  ListView.builder(
+                  GridView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 12,
+                      mainAxisSpacing: 12,
+                      childAspectRatio: 0.9,
+                    ),
                     itemCount: currentMasterBranch.subcategories.length,
                     itemBuilder: (context, index) {
                       final subcategory = currentMasterBranch.subcategories[index];
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: Card(
-                          color: const Color(0xFF1A1F2E),
-                          shape: RoundedRectangleBorder(
+                      return GestureDetector(
+                        onTap: () => _navigateToSubcategoryDetail(subcategory),
+                        child: Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF1A1F2E),
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(
+                            border: Border.all(
                               color: Colors.grey[800]!,
                               width: 1,
                             ),
                           ),
-                          child: ListTile(
-                            leading: Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4A90E2).withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: const Icon(
-                                Icons.category,
-                                color: Color(0xFF4A90E2),
-                              ),
-                            ),
-                            title: Text(
-                              subcategory.name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              subcategory.additionalField,
-                              style: TextStyle(
-                                color: Colors.grey[400],
-                              ),
-                            ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Text(
-                                  '${subcategory.accounts.length} accounts',
-                                  style: TextStyle(
-                                    color: Colors.grey[500],
-                                    fontSize: 12,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.all(6),
+                                    decoration: BoxDecoration(
+                                      color: const Color(0xFF4A90E2).withOpacity(0.2),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: const Icon(
+                                      Icons.category,
+                                      color: Color(0xFF4A90E2),
+                                      size: 16,
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                    size: 16,
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.delete,
+                                      color: Colors.red,
+                                      size: 14,
+                                    ),
+                                    onPressed: () => _deleteSubcategory(subcategory),
+                                    padding: const EdgeInsets.all(2),
+                                    constraints: const BoxConstraints(),
                                   ),
-                                  onPressed: () => _deleteSubcategory(subcategory),
-                                  padding: const EdgeInsets.all(4),
-                                  constraints: const BoxConstraints(),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                subcategory.name,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 14,
                                 ),
-                                const SizedBox(width: 4),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Color(0xFF4A90E2),
-                                  size: 16,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                subcategory.additionalField,
+                                style: TextStyle(
+                                  color: Colors.grey[400],
+                                  fontSize: 11,
                                 ),
-                              ],
-                            ),
-                            onTap: () => _navigateToSubcategoryDetail(subcategory),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                '${subcategory.accounts.length} accounts',
+                                style: TextStyle(
+                                  color: Colors.grey[500],
+                                  fontSize: 11,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       );
@@ -455,6 +474,21 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
           );
         }
       }
+    }
+  }
+
+  void _editMasterBranch() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MasterBranchPage(masterBranch: currentMasterBranch),
+      ),
+    );
+
+    if (result != null && result is MasterBranch) {
+      setState(() {
+        currentMasterBranch = result;
+      });
     }
   }
 }

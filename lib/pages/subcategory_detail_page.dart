@@ -5,6 +5,7 @@ import '../models/master_branch.dart';
 import '../services/firebase_service.dart';
 import 'add_account_page.dart';
 import 'account_detail_page.dart';
+import 'subcategory_page.dart';
 
 class SubcategoryDetailPage extends StatefulWidget {
   final Subcategory subcategory;
@@ -50,6 +51,12 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context, currentSubcategory),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.white),
+            onPressed: _editSubcategory,
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -482,6 +489,29 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
           );
         }
       }
+    }
+  }
+
+  void _editSubcategory() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SubcategoryPage(
+          masterBranch: widget.masterBranch ?? MasterBranch(
+            id: widget.masterBranchId,
+            name: '',
+            additionalField: '',
+            description: '',
+          ),
+          subcategory: currentSubcategory,
+        ),
+      ),
+    );
+
+    if (result != null && result is Subcategory) {
+      setState(() {
+        currentSubcategory = result.copyWith(accounts: currentSubcategory.accounts); // Preserve existing accounts
+      });
     }
   }
 }

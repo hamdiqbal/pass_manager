@@ -4,10 +4,12 @@ import '../models/subcategory.dart';
 
 class SubcategoryPage extends StatefulWidget {
   final MasterBranch masterBranch;
+  final Subcategory? subcategory; // Optional parameter for editing
 
   const SubcategoryPage({
     super.key,
     required this.masterBranch,
+    this.subcategory,
   });
 
   @override
@@ -19,6 +21,17 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
   final TextEditingController _additionalFieldController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool get isEditing => widget.subcategory != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (isEditing) {
+      _nameController.text = widget.subcategory!.name;
+      _additionalFieldController.text = widget.subcategory!.additionalField;
+      _descriptionController.text = widget.subcategory!.description;
+    }
+  }
 
   @override
   void dispose() {
@@ -35,9 +48,9 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A1F2E),
         elevation: 0,
-        title: const Text(
-          'Add Subcategory',
-          style: TextStyle(
+        title: Text(
+          isEditing ? 'Edit Subcategory' : 'Add Subcategory',
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -88,9 +101,9 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                   ),
                   const SizedBox(height: 32),
                   
-                  const Text(
-                    'Create New Subcategory',
-                    style: TextStyle(
+                  Text(
+                    isEditing ? 'Edit Subcategory' : 'Create New Subcategory',
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -98,7 +111,9 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Fill in the details to create a new subcategory',
+                    isEditing 
+                      ? 'Update the details for this subcategory'
+                      : 'Fill in the details to create a new subcategory',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[400],
@@ -162,9 +177,9 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        'Save Subcategory',
-                        style: TextStyle(
+                      child: Text(
+                        isEditing ? 'Update Subcategory' : 'Save Subcategory',
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -244,12 +259,18 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
 
   void _saveSubcategory() {
     if (_formKey.currentState!.validate()) {
-      final subcategory = Subcategory(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: _nameController.text.trim(),
-        additionalField: _additionalFieldController.text.trim(),
-        description: _descriptionController.text.trim(),
-      );
+      final subcategory = isEditing
+        ? widget.subcategory!.copyWith(
+            name: _nameController.text.trim(),
+            additionalField: _additionalFieldController.text.trim(),
+            description: _descriptionController.text.trim(),
+          )
+        : Subcategory(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            name: _nameController.text.trim(),
+            additionalField: _additionalFieldController.text.trim(),
+            description: _descriptionController.text.trim(),
+          );
 
       // Return the subcategory to the master branch detail page
       Navigator.pop(context, subcategory);

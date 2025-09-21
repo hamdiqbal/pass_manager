@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import '../models/master_branch.dart';
 
 class MasterBranchPage extends StatefulWidget {
-  const MasterBranchPage({super.key});
+  final MasterBranch? masterBranch; // Optional parameter for editing
+
+  const MasterBranchPage({
+    super.key,
+    this.masterBranch,
+  });
 
   @override
   State<MasterBranchPage> createState() => _MasterBranchPageState();
@@ -13,6 +18,17 @@ class _MasterBranchPageState extends State<MasterBranchPage> {
   final TextEditingController _additionalFieldController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  bool get isEditing => widget.masterBranch != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (isEditing) {
+      _nameController.text = widget.masterBranch!.name;
+      _additionalFieldController.text = widget.masterBranch!.additionalField;
+      _descriptionController.text = widget.masterBranch!.description;
+    }
+  }
 
   @override
   void dispose() {
@@ -29,9 +45,9 @@ class _MasterBranchPageState extends State<MasterBranchPage> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF1A1F2E),
         elevation: 0,
-        title: const Text(
-          'Master Branch Page',
-          style: TextStyle(
+        title: Text(
+          isEditing ? 'Edit Master Branch' : 'Master Branch Page',
+          style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
@@ -125,9 +141,9 @@ class _MasterBranchPageState extends State<MasterBranchPage> {
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
-                        'Add Master Branch',
-                        style: TextStyle(
+                      child: Text(
+                        isEditing ? 'Update Master Branch' : 'Add Master Branch',
+                        style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
@@ -207,12 +223,18 @@ class _MasterBranchPageState extends State<MasterBranchPage> {
 
   void _addMasterBranch() {
     if (_formKey.currentState!.validate()) {
-      final masterBranch = MasterBranch(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        name: _nameController.text.trim(),
-        additionalField: _additionalFieldController.text.trim(),
-        description: _descriptionController.text.trim(),
-      );
+      final masterBranch = isEditing 
+        ? widget.masterBranch!.copyWith(
+            name: _nameController.text.trim(),
+            additionalField: _additionalFieldController.text.trim(),
+            description: _descriptionController.text.trim(),
+          )
+        : MasterBranch(
+            id: DateTime.now().millisecondsSinceEpoch.toString(),
+            name: _nameController.text.trim(),
+            additionalField: _additionalFieldController.text.trim(),
+            description: _descriptionController.text.trim(),
+          );
 
       // Return the master branch to the home page
       Navigator.pop(context, masterBranch);
