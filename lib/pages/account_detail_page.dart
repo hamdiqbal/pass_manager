@@ -362,10 +362,8 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
         if (result is Account) {
           // Account was updated, save it and go back to refresh parent
           _updateAccount(result);
-        } else if (result == 'DELETE_ACCOUNT') {
-          // Account deletion was requested, handle it
-          _handleAccountDeletion();
         }
+        // Removed DELETE_ACCOUNT handling since delete button was removed
       }
     });
   }
@@ -406,12 +404,15 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
 
   Future<void> _handleAccountDeletion() async {
     try {
+      print('🔸 Account deletion requested from edit page');
       // Delete the account from Firebase
+      print('🔸 Attempting to delete account from Firebase...');
       await _firebaseService.deleteAccountFromSubcategory(
         widget.masterBranch.id,
         widget.subcategory.id,
         currentAccount.id,
       );
+      print('🔸 Account successfully deleted from Firebase');
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -421,10 +422,12 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
           ),
         );
 
-        // Navigate back to subcategory detail page
-        Navigator.of(context).pop();
+        // Navigate back to subcategory detail page with deletion result
+        print('🔸 Navigating back with deletion result (true)...');
+        Navigator.of(context).pop(true); // Return true to indicate deletion
       }
     } catch (e) {
+      print('🔸 Error deleting account: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -437,15 +440,19 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
   }
 
   void _deleteAccount() async {
+    print('🔸 Delete account called');
     final confirmed = await _showDeleteConfirmation();
+    print('🔸 Deletion confirmed: $confirmed');
     if (confirmed) {
       try {
+        print('🔸 Attempting to delete account from Firebase...');
         await _firebaseService.deleteAccountFromSubcategory(
           widget.masterBranch.id,
           widget.subcategory.id,
           currentAccount.id,
         );
         
+        print('🔸 Account successfully deleted from Firebase');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -453,9 +460,11 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
               backgroundColor: Colors.green,
             ),
           );
+          print('🔸 Navigating back with deletion result...');
           Navigator.pop(context, true); // Return true to indicate deletion
         }
       } catch (e) {
+        print('🔸 Error deleting account: $e');
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(

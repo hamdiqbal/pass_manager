@@ -24,6 +24,15 @@ class _HomePageState extends State<HomePage> {
     _loadMasterBranches();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Refresh data when the page becomes active again
+    if (mounted) {
+      _loadMasterBranches();
+    }
+  }
+
   Future<void> _loadMasterBranches() async {
     try {
       setState(() {
@@ -240,13 +249,24 @@ class _HomePageState extends State<HomePage> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Master Branch',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Add Master Branch',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -275,10 +295,6 @@ class _HomePageState extends State<HomePage> {
                           color: const Color(0xFFF5F5F5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                            side: BorderSide(
-                              color: Colors.grey[800]!,
-                              width: 1,
-                            ),
                           ),
                           child: ListTile(
                             leading: Container(
@@ -311,6 +327,7 @@ class _HomePageState extends State<HomePage> {
                               size: 16,
                             ),
                             onTap: () => _navigateToMasterBranchDetail(masterBranch),
+                            onLongPress: () => _showMasterBranchOptions(masterBranch),
                           ),
                         ),
                       );
@@ -375,8 +392,13 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    // If the master branch was updated, replace it in the list and save to Firebase
-    if (result != null && result is MasterBranch) {
+    if (result == 'deleted') {
+      // Master branch was deleted, refresh the data
+      if (mounted) {
+        _loadMasterBranches();
+      }
+    } else if (result != null && result is MasterBranch) {
+      // If the master branch was updated, replace it in the list and save to Firebase
       try {
         // Save to Firebase first
         await _firebaseService.updateMasterBranch(result);
@@ -475,5 +497,50 @@ class _HomePageState extends State<HomePage> {
         }
       }
     }
+  }
+
+  void _showMasterBranchOptions(MasterBranch masterBranch) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                masterBranch.name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete Master Branch', style: TextStyle(color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteMasterBranch(masterBranch);
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

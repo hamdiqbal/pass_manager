@@ -157,12 +157,24 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  currentSubcategory.description,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                    height: 1.5,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.grey[300]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    currentSubcategory.description,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                      height: 1.5,
+                    ),
                   ),
                 ),
                 
@@ -195,13 +207,24 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Add Account',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Add Account',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -266,6 +289,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                               size: 16,
                             ),
                             onTap: () => _showAccountDetails(account),
+                            onLongPress: () => _showAccountOptions(account),
                           ),
                         ),
                       );
@@ -368,6 +392,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
   }
 
   Future<void> _loadSubcategory() async {
+    print('🔸 Loading subcategory data...');
     try {
       final masterBranches = await _firebaseService.getMasterBranches();
       final masterBranch = masterBranches.firstWhere(
@@ -377,10 +402,13 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
         (sub) => sub.id == widget.subcategory.id,
       );
       
+      print('🔸 Updated subcategory has ${updatedSubcategory.accounts.length} accounts');
       setState(() {
         currentSubcategory = updatedSubcategory;
       });
+      print('🔸 Subcategory state updated successfully');
     } catch (e) {
+      print('🔸 Error loading subcategory: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -425,9 +453,26 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
         ),
       ),
     ).then((result) {
+      print('🔸 Account detail navigation completed');
+      print('🔸 Account detail result: $result');
+      print('🔸 Result type: ${result.runtimeType}');
+      print('🔸 Result == true: ${result == true}');
       if (result == true) {
-        // Account was updated/deleted, refresh the page
+        // Account was deleted, force immediate local state update
+        print('🔸 Account was deleted, removing from local state immediately...');
+        setState(() {
+          final updatedAccounts = currentSubcategory.accounts
+              .where((acc) => acc.id != account.id)
+              .toList();
+          currentSubcategory = currentSubcategory.copyWith(accounts: updatedAccounts);
+          print('🔸 Local state updated - now has ${currentSubcategory.accounts.length} accounts');
+        });
+        
+        // Also refresh from Firebase in the background
+        print('🔸 Starting background Firebase refresh...');
         _loadSubcategory();
+      } else {
+        print('🔸 No refresh needed, result was: $result');
       }
     });
   }
@@ -746,5 +791,50 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
         );
       }
     }
+  }
+
+  void _showAccountOptions(Account account) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (BuildContext context) {
+        return Container(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Colors.grey[300],
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+              const SizedBox(height: 20),
+              Text(
+                account.name,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ListTile(
+                leading: const Icon(Icons.delete, color: Colors.red),
+                title: const Text('Delete Account', style: TextStyle(color: Colors.red)),
+                onTap: () {
+                  Navigator.pop(context);
+                  _deleteAccount(account);
+                },
+              ),
+              const SizedBox(height: 20),
+            ],
+          ),
+        );
+      },
+    );
   }
 }

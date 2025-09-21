@@ -91,12 +91,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: _isEditing ? [
-          IconButton(
-            icon: const Icon(Icons.delete, color: Colors.white),
-            onPressed: _deleteAccount,
-          ),
-        ] : null,
+        actions: null, // Removed delete button
       ),
       body: SafeArea(
         child: SingleChildScrollView(

@@ -76,12 +76,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: isEditing ? [
-          IconButton(
-            icon: const Icon(Icons.delete, color: Colors.white),
-            onPressed: _deleteSubcategory,
-          ),
-        ] : null,
+        actions: null, // Removed delete button
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -640,7 +635,11 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
   }
 
   Future<void> _deleteSubcategory() async {
-    if (!isEditing || widget.subcategory == null) return;
+    print('Delete subcategory called');
+    if (!isEditing || widget.subcategory == null) {
+      print('Cannot delete - not editing or subcategory is null');
+      return;
+    }
 
     // First confirmation popup
     final firstConfirmed = await _showDeleteConfirmation(
@@ -648,6 +647,8 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       'Delete Subcategory',
       'Are you sure you want to delete "${widget.subcategory!.name}"?',
     );
+
+    print('First confirmation: $firstConfirmed');
 
     if (!firstConfirmed) return;
 
@@ -661,14 +662,17 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       'You have $accountCount ${accountCount == 1 ? 'account' : 'accounts'} in this subcategory. All accounts will also be deleted. This action cannot be undone.',
     );
 
+    print('Second confirmation: $secondConfirmed');
     if (!secondConfirmed) return;
 
     try {
       // Delete from Firebase
+      print('Attempting to delete subcategory from Firebase...');
       await FirebaseService().deleteSubcategoryFromMasterBranch(
         widget.masterBranch.id,
         widget.subcategory!.id,
       );
+      print('Successfully deleted from Firebase');
 
       // Show success message
       if (mounted) {
@@ -679,9 +683,13 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
           ),
         );
 
-        // Navigate back to master branch detail page
-        Navigator.of(context).pop();
-        Navigator.of(context).pop();
+        // Wait a moment for the snackbar, then navigate back
+        await Future.delayed(const Duration(milliseconds: 1000));
+        
+        if (mounted) {
+          print('Navigating back with deleted result');
+          Navigator.of(context).pop('deleted');
+        }
       }
     } catch (e) {
       // Show error message

@@ -46,6 +46,20 @@ class FirebaseService {
     }
   }
 
+  Future<MasterBranch?> getMasterBranchById(String masterBranchId) async {
+    if (currentUserId == null) throw Exception('User not authenticated');
+    
+    try {
+      DocumentSnapshot doc = await _masterBranchesCollection.doc(masterBranchId).get();
+      if (doc.exists) {
+        return MasterBranch.fromJson(doc.data() as Map<String, dynamic>);
+      }
+      return null;
+    } catch (e) {
+      throw Exception('Failed to load master branch: $e');
+    }
+  }
+
   Future<void> updateMasterBranch(MasterBranch masterBranch) async {
     if (currentUserId == null) throw Exception('User not authenticated');
     

@@ -73,12 +73,7 @@ class _MasterBranchPageState extends State<MasterBranchPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-        actions: isEditing ? [
-          IconButton(
-            icon: const Icon(Icons.delete, color: Colors.white),
-            onPressed: _deleteMasterBranch,
-          ),
-        ] : null,
+        actions: null, // Removed delete button
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -645,9 +640,16 @@ class _MasterBranchPageState extends State<MasterBranchPage> {
           ),
         );
 
-        // Navigate back to home screen
-        Navigator.of(context).pop();
-        Navigator.of(context).pop();
+        // Wait a moment for the snackbar, then navigate directly to home
+        await Future.delayed(const Duration(milliseconds: 1000));
+        
+        if (mounted) {
+          // Navigate directly to home and clear the navigation stack
+          Navigator.of(context).pushNamedAndRemoveUntil(
+            '/',
+            (route) => false,
+          );
+        }
       }
     } catch (e) {
       // Show error message

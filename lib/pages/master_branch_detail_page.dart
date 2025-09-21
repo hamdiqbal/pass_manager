@@ -130,12 +130,24 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  currentMasterBranch.description,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: Colors.grey[600],
-                    height: 1.5,
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF5F5F5),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: Colors.grey[300]!,
+                      width: 1,
+                    ),
+                  ),
+                  child: Text(
+                    currentMasterBranch.description,
+                    style: TextStyle(
+                      fontSize: 16,
+                      color: Colors.grey[700],
+                      height: 1.5,
+                    ),
                   ),
                 ),
                 
@@ -168,13 +180,24 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Add Subcategory',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    child: const Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.add,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        SizedBox(width: 8),
+                        Text(
+                          'Add Subcategory',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
@@ -657,14 +680,6 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
             ),
             const SizedBox(height: 20),
             ListTile(
-              leading: const Icon(Icons.edit, color: Color(0xFF3E2411)),
-              title: const Text('Edit Subcategory', style: TextStyle(color: Colors.black)),
-              onTap: () {
-                Navigator.pop(context);
-                _editSubcategory(subcategory);
-              },
-            ),
-            ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
               title: const Text('Delete Subcategory', style: TextStyle(color: Colors.red)),
               onTap: () {
@@ -680,6 +695,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
   }
 
   void _editSubcategory(Subcategory subcategory) async {
+    print('🔸 Edit subcategory called with: ${subcategory.id}');
     final result = await Navigator.push(
       context,
       MaterialPageRoute(
@@ -690,7 +706,35 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
       ),
     );
 
-    if (result != null && result is Subcategory) {
+    print('🔸 Edit subcategory result: $result');
+    print('🔸 Result type: ${result.runtimeType}');
+
+    if (result == 'deleted') {
+      // Subcategory was deleted, force refresh the state
+      print('Subcategory deleted, forcing state refresh...');
+      
+      // Force remove the subcategory from local state immediately
+      setState(() {
+        final updatedSubcategories = currentMasterBranch.subcategories
+            .where((s) => s.id != subcategory.id)
+            .toList();
+        currentMasterBranch = currentMasterBranch.copyWith(subcategories: updatedSubcategories);
+      });
+      
+      // Also try to refresh from Firebase in the background
+      try {
+        final updatedMasterBranch = await _firebaseService.getMasterBranchById(currentMasterBranch.id);
+        if (updatedMasterBranch != null) {
+          print('Successfully reloaded master branch with ${updatedMasterBranch.subcategories.length} subcategories');
+          setState(() {
+            currentMasterBranch = updatedMasterBranch;
+          });
+        }
+      } catch (e) {
+        print('Error reloading master branch: $e');
+        // Local state update already happened above
+      }
+    } else if (result != null && result is Subcategory) {
       try {
         // Update the subcategory in Firebase
         await _firebaseService.updateSubcategoryInMasterBranch(
