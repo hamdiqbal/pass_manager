@@ -45,28 +45,31 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
       final setupCompleted = await _biometricService.isBiometricSetupCompleted(_currentUserId!);
       final isEnabled = await _biometricService.isBiometricEnabled(_currentUserId!);
       
-      print('User: $_currentUserId - Biometric available: $isAvailable, enrolled: $hasEnrolled, setup completed: $setupCompleted, enabled: $isEnabled');
+      print('User: $_currentUserId - Authentication available: $isAvailable, enrolled: $hasEnrolled, setup completed: $setupCompleted, enabled: $isEnabled');
       
       if (!isAvailable || !hasEnrolled) {
-        print('Biometric not available or not enrolled, proceeding to home');
+        print('Device authentication not available or not enrolled, proceeding to home');
         await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
         await _biometricService.setBiometricEnabled(_currentUserId!, false);
         _proceedToHome();
         return;
       }
       
+      // Get authentication description for better user experience
+      final authDescription = await _biometricService.getAuthenticationDescription();
       final types = await _biometricService.getAvailableBiometrics();
+      
       setState(() {
         _biometricType = _biometricService.getBiometricTypeString(types);
         _showEnableBiometric = !setupCompleted || !isEnabled;
       });
       
       if (setupCompleted && isEnabled) {
-        // Automatically prompt for biometric if already enabled
+        // Automatically prompt for authentication if already enabled
         _authenticateWithBiometric();
       }
     } catch (e) {
-      print('Error checking biometric availability: $e');
+      print('Error checking authentication availability: $e');
       _proceedToHome();
     }
   }
@@ -77,18 +80,18 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
     });
 
     try {
-      print('Starting biometric authentication...');
+      print('Starting device authentication...');
       final bool authenticated = await _biometricService.authenticateWithBiometrics();
       
       if (authenticated) {
-        print('Biometric authentication successful');
+        print('Device authentication successful');
         _proceedToHome();
       } else {
-        print('Biometric authentication failed');
+        print('Device authentication failed');
         _showBiometricError();
       }
     } catch (e) {
-      print('Exception during biometric authentication: $e');
+      print('Exception during device authentication: $e');
       _showBiometricError();
     } finally {
       if (mounted) {
@@ -107,20 +110,20 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
     });
 
     try {
-      print('Enabling and authenticating with biometric...');
+      print('Enabling and authenticating with device security...');
       final bool authenticated = await _biometricService.authenticateWithBiometrics();
       
       if (authenticated) {
-        print('Biometric authentication successful, enabling biometric');
+        print('Device authentication successful, enabling authentication');
         await _biometricService.setBiometricEnabled(_currentUserId!, true);
         await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
         _proceedToHome();
       } else {
-        print('Biometric authentication failed during enable');
+        print('Device authentication failed during enable');
         _showBiometricError();
       }
     } catch (e) {
-      print('Exception during biometric enable: $e');
+      print('Exception during device authentication enable: $e');
       _showBiometricError();
     } finally {
       if (mounted) {
@@ -138,7 +141,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
   void _showBiometricError() {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('$_biometricType authentication failed'),
+        content: Text('Authentication failed. Please try again.'),
         backgroundColor: Colors.red[600],
         action: SnackBarAction(
           label: 'Try Again',
@@ -154,14 +157,14 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFFF5F5F5),
+          backgroundColor: Colors.white,
           title: const Text(
-            'No Biometric Authentication Found',
-            style: TextStyle(color: Colors.white),
+            'No Device Security Found',
+            style: TextStyle(color: Colors.black),
           ),
           content: const Text(
-            'Please set up fingerprint or face recognition in your device settings to use biometric authentication.',
-            style: TextStyle(color: Colors.grey),
+            'Please set up a screen lock (fingerprint, face recognition, pattern, PIN, or password) in your device settings to secure the app.',
+            style: TextStyle(color: Colors.black87),
           ),
           actions: [
             TextButton(
@@ -192,16 +195,35 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
     _proceedToHome();
   }
 
+  IconData _getAuthenticationIcon() {
+    switch (_biometricType) {
+      case 'Face ID':
+        return Icons.face;
+      case 'Fingerprint':
+        return Icons.fingerprint;
+      case 'Device Security':
+        return Icons.lock;
+      default:
+        return Icons.security;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              minHeight: MediaQuery.of(context).size.height - 
+                          MediaQuery.of(context).padding.top - 
+                          MediaQuery.of(context).padding.bottom - 48,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
               // Security Icon
               Container(
                 width: 120,
@@ -224,7 +246,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                 ),
               ),
               
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
               
               // Title
               const Text(
@@ -232,37 +254,35 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                 style: TextStyle(
                   fontSize: 32,
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
                 textAlign: TextAlign.center,
               ),
               
-              const SizedBox(height: 16),
+              const SizedBox(height: 12),
               
               // Subtitle
               Text(
                 _showEnableBiometric 
-                    ? 'Enable $_biometricType for quick and secure access'
-                    : 'Use $_biometricType to access your vault',
-                style: TextStyle(
+                    ? 'Enable ${_biometricType == 'Device Security' ? 'device security' : _biometricType} for quick and secure access'
+                    : 'Use ${_biometricType == 'Device Security' ? 'your device security' : _biometricType} to access your vault',
+                style: const TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[400],
+                  color: Colors.black87,
                 ),
                 textAlign: TextAlign.center,
               ),
               
-              const SizedBox(height: 60),
+              const SizedBox(height: 48),
               
-              // Biometric Icon
+              // Authentication Icon - choose appropriate icon based on type
               Icon(
-                _biometricType == 'Face ID' 
-                    ? Icons.face 
-                    : Icons.fingerprint,
+                _getAuthenticationIcon(),
                 color: const Color(0xFF3E2411),
                 size: 80,
               ),
               
-              const SizedBox(height: 60),
+              const SizedBox(height: 48),
               
               // Main Action Button
               if (!_isLoading) ...[
@@ -285,16 +305,14 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
-                          _biometricType == 'Face ID' 
-                              ? Icons.face 
-                              : Icons.fingerprint,
+                          _getAuthenticationIcon(),
                           size: 24,
                         ),
                         const SizedBox(width: 12),
                         Text(
                           _showEnableBiometric 
-                              ? 'Enable $_biometricType'
-                              : 'Authenticate with $_biometricType',
+                              ? 'Enable ${_biometricType == 'Device Security' ? 'Device Security' : _biometricType}'
+                              : 'Authenticate',
                           style: const TextStyle(
                             fontSize: 16,
                             fontWeight: FontWeight.w600,
@@ -305,21 +323,21 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                   ),
                 ),
                 
-                const SizedBox(height: 24),
+                const SizedBox(height: 20),
                 
                 // Skip Button
                 TextButton(
                   onPressed: _skipBiometric,
-                  child: Text(
-                    'Skip Biometric Authentication',
+                  child: const Text(
+                    'Skip Authentication',
                     style: TextStyle(
-                      color: Colors.grey[400],
+                      color: Colors.black54,
                       fontSize: 16,
                     ),
                   ),
                 ),
                 
-                const SizedBox(height: 16),
+                const SizedBox(height: 12),
                 
                 // Sign Out Button
                 TextButton(
@@ -338,19 +356,20 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                 const CircularProgressIndicator(
                   color: Color(0xFF3E2411),
                 ),
-                const SizedBox(height: 24),
-                Text(
+                const SizedBox(height: 20),
+                const Text(
                   'Authenticating...',
                   style: TextStyle(
-                    color: Colors.grey[400],
+                    color: Colors.black87,
                     fontSize: 16,
                   ),
                 ),
               ],
             ],
-          ),
-        ),
-      ),
-    );
+          ), // Close Column
+        ), // Close ConstrainedBox
+      ), // Close SingleChildScrollView  
+    ), // Close SafeArea
+    ); // Close Scaffold
   }
 }
