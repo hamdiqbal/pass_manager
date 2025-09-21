@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/master_branch.dart';
 import '../models/custom_field.dart';
+import '../services/firebase_service.dart';
 
 class MasterBranchPage extends StatefulWidget {
   final MasterBranch? masterBranch; // Optional parameter for editing
@@ -72,6 +73,12 @@ class _MasterBranchPageState extends State<MasterBranchPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: isEditing ? [
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.white),
+            onPressed: _deleteMasterBranch,
+          ),
+        ] : null,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -560,5 +567,94 @@ class _MasterBranchPageState extends State<MasterBranchPage> {
         hiddenFieldVisibility[field.id] = false;
       }
     });
+  }
+
+  Future<bool> _showDeleteConfirmation(BuildContext context, String title, String content) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            title,
+            style: const TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            content,
+            style: TextStyle(color: Colors.grey[300]),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Color(0xFF3E2411)),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+  }
+
+  Future<void> _deleteMasterBranch() async {
+    if (!isEditing || widget.masterBranch == null) return;
+
+    // First confirmation popup
+    final firstConfirmed = await _showDeleteConfirmation(
+      context,
+      'Delete Master Branch',
+      'Are you sure you want to delete "${widget.masterBranch!.name}"?',
+    );
+
+    if (!firstConfirmed) return;
+
+    // Count subcategories for second confirmation
+    int subcategoryCount = widget.masterBranch!.subcategories.length;
+    
+    // Second confirmation popup with subcategory count
+    final secondConfirmed = await _showDeleteConfirmation(
+      context,
+      'Warning: Delete All Data',
+      'You have $subcategoryCount ${subcategoryCount == 1 ? 'category' : 'categories'} in this branch. All subcategories and their accounts will also be deleted. This action cannot be undone.',
+    );
+
+    if (!secondConfirmed) return;
+
+    try {
+      // Delete from Firebase
+      await FirebaseService().deleteMasterBranch(widget.masterBranch!.id);
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Master branch deleted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to home screen
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting master branch: $e'),
+            backgroundColor: Colors.red[600],
+          ),
+        );
+      }
+    }
   }
 }

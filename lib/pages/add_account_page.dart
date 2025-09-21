@@ -91,6 +91,12 @@ class _AddAccountPageState extends State<AddAccountPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: _isEditing ? [
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.white),
+            onPressed: _deleteAccount,
+          ),
+        ] : null,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -685,5 +691,67 @@ class _AddAccountPageState extends State<AddAccountPage> {
       fieldControllers.remove(fieldId);
       hiddenFieldVisibility.remove(fieldId);
     });
+  }
+
+  Future<bool> _showDeleteConfirmation(BuildContext context, String title, String content) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            title,
+            style: const TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            content,
+            style: TextStyle(color: Colors.grey[300]),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Color(0xFF3E2411)),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+  }
+
+  Future<void> _deleteAccount() async {
+    if (!_isEditing || widget.account == null) return;
+
+    // First confirmation popup
+    final firstConfirmed = await _showDeleteConfirmation(
+      context,
+      'Delete Account',
+      'Are you sure you want to delete "${widget.account!.name}"?',
+    );
+
+    if (!firstConfirmed) return;
+
+    // Second confirmation popup
+    final secondConfirmed = await _showDeleteConfirmation(
+      context,
+      'Warning: Delete Account',
+      'This action cannot be undone. The account will be permanently deleted.',
+    );
+
+    if (!secondConfirmed) return;
+
+    // Return a special deletion signal to the calling page
+    if (mounted) {
+      Navigator.of(context).pop('DELETE_ACCOUNT');
+    }
   }
 }

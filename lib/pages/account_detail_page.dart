@@ -67,10 +67,6 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
             icon: const Icon(Icons.edit, color: Colors.white),
             onPressed: () => _editAccount(),
           ),
-          IconButton(
-            icon: const Icon(Icons.delete, color: Colors.red),
-            onPressed: () => _deleteAccount(),
-          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -344,9 +340,14 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
         ),
       ),
     ).then((result) {
-      if (result != null && result is Account) {
-        // Account was updated, save it and go back to refresh parent
-        _updateAccount(result);
+      if (result != null) {
+        if (result is Account) {
+          // Account was updated, save it and go back to refresh parent
+          _updateAccount(result);
+        } else if (result == 'DELETE_ACCOUNT') {
+          // Account deletion was requested, handle it
+          _handleAccountDeletion();
+        }
       }
     });
   }
@@ -379,6 +380,38 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
           SnackBar(
             content: Text('Error updating account: $e'),
             backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleAccountDeletion() async {
+    try {
+      // Delete the account from Firebase
+      await _firebaseService.deleteAccountFromSubcategory(
+        widget.masterBranch.id,
+        widget.subcategory.id,
+        currentAccount.id,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Account deleted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to subcategory detail page
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting account: $e'),
+            backgroundColor: Colors.red[600],
           ),
         );
       }

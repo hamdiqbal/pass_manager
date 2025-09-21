@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/master_branch.dart';
 import '../models/subcategory.dart';
 import '../models/custom_field.dart';
+import '../services/firebase_service.dart';
 
 class SubcategoryPage extends StatefulWidget {
   final MasterBranch masterBranch;
@@ -75,6 +76,12 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: isEditing ? [
+          IconButton(
+            icon: const Icon(Icons.delete, color: Colors.white),
+            onPressed: _deleteSubcategory,
+          ),
+        ] : null,
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -591,5 +598,97 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
         hiddenFieldVisibility[field.id] = false;
       }
     });
+  }
+
+  Future<bool> _showDeleteConfirmation(BuildContext context, String title, String content) async {
+    return await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            title,
+            style: const TextStyle(color: Colors.white),
+          ),
+          content: Text(
+            content,
+            style: TextStyle(color: Colors.grey[300]),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text(
+                'Cancel',
+                style: TextStyle(color: Color(0xFF3E2411)),
+              ),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text(
+                'Delete',
+                style: TextStyle(color: Colors.red),
+              ),
+            ),
+          ],
+        );
+      },
+    ) ?? false;
+  }
+
+  Future<void> _deleteSubcategory() async {
+    if (!isEditing || widget.subcategory == null) return;
+
+    // First confirmation popup
+    final firstConfirmed = await _showDeleteConfirmation(
+      context,
+      'Delete Subcategory',
+      'Are you sure you want to delete "${widget.subcategory!.name}"?',
+    );
+
+    if (!firstConfirmed) return;
+
+    // Count accounts for second confirmation
+    int accountCount = widget.subcategory!.accounts.length;
+    
+    // Second confirmation popup with account count
+    final secondConfirmed = await _showDeleteConfirmation(
+      context,
+      'Warning: Delete All Data',
+      'You have $accountCount ${accountCount == 1 ? 'account' : 'accounts'} in this subcategory. All accounts will also be deleted. This action cannot be undone.',
+    );
+
+    if (!secondConfirmed) return;
+
+    try {
+      // Delete from Firebase
+      await FirebaseService().deleteSubcategoryFromMasterBranch(
+        widget.masterBranch.id,
+        widget.subcategory!.id,
+      );
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Subcategory deleted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to master branch detail page
+        Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting subcategory: $e'),
+            backgroundColor: Colors.red[600],
+          ),
+        );
+      }
+    }
   }
 }

@@ -48,6 +48,12 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context, currentMasterBranch),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit, color: Colors.white),
+            onPressed: _editMasterBranch,
+          ),
+        ],
       ),
       body: SafeArea(
         child: SingleChildScrollView(
@@ -108,27 +114,6 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                                 ),
                               ],
                             ),
-                          ),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.edit,
-                              color: Color(0xFF3E2411),
-                              size: 20,
-                            ),
-                            onPressed: _editMasterBranch,
-                            padding: const EdgeInsets.all(4),
-                            constraints: const BoxConstraints(),
-                          ),
-                          const SizedBox(width: 8),
-                          IconButton(
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.red,
-                              size: 20,
-                            ),
-                            onPressed: _deleteMasterBranch,
-                            padding: const EdgeInsets.all(4),
-                            constraints: const BoxConstraints(),
                           ),
                         ],
                       ),
