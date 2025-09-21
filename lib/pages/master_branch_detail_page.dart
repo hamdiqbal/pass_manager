@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/master_branch.dart';
 import '../models/subcategory.dart';
+import '../models/custom_field.dart';
 import '../services/firebase_service.dart';
 import 'subcategory_page.dart';
 import 'subcategory_detail_page.dart';
@@ -21,6 +22,7 @@ class MasterBranchDetailPage extends StatefulWidget {
 class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
   late MasterBranch currentMasterBranch;
   final FirebaseService _firebaseService = FirebaseService();
+  Map<String, bool> hiddenFieldVisibility = {}; // Track visibility of hidden fields
 
   @override
   void initState() {
@@ -133,6 +135,21 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                           height: 1.5,
                         ),
                       ),
+                      
+                      // Custom Fields Display
+                      if (currentMasterBranch.customFields.isNotEmpty) ...[
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Custom Fields',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        ...currentMasterBranch.customFields.map((field) => _buildCustomFieldDisplay(field)).toList(),
+                      ],
                     ],
                   ),
                 ),
@@ -474,6 +491,130 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
           );
         }
       }
+    }
+  }
+
+  Widget _buildCustomFieldDisplay(CustomField field) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: const Color(0xFF1A1F2E),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey[800]!,
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                field.name,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.white,
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                decoration: BoxDecoration(
+                  color: _getFieldTypeColor(field.type),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Text(
+                  field.type.toUpperCase(),
+                  style: const TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          _buildFieldValueDisplay(field),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFieldValueDisplay(CustomField field) {
+    switch (field.type) {
+      case 'boolean':
+        return Row(
+          children: [
+            Icon(
+              field.value == true ? Icons.check_circle : Icons.cancel,
+              color: field.value == true ? Colors.green : Colors.red,
+              size: 20,
+            ),
+            const SizedBox(width: 8),
+            Text(
+              field.value == true ? 'True' : 'False',
+              style: TextStyle(
+                color: Colors.grey[300],
+                fontSize: 16,
+              ),
+            ),
+          ],
+        );
+      case 'hidden':
+        final isVisible = hiddenFieldVisibility[field.id] ?? false;
+        return Row(
+          children: [
+            Expanded(
+              child: Text(
+                isVisible ? (field.value?.toString() ?? '') : '••••••••',
+                style: TextStyle(
+                  color: Colors.grey[300],
+                  fontSize: 16,
+                ),
+              ),
+            ),
+            IconButton(
+              icon: Icon(
+                isVisible ? Icons.visibility : Icons.visibility_off,
+                color: Colors.grey[400],
+              ),
+              onPressed: () {
+                setState(() {
+                  hiddenFieldVisibility[field.id] = !isVisible;
+                });
+              },
+            ),
+          ],
+        );
+      case 'linked':
+      case 'text':
+      default:
+        return Text(
+          field.value?.toString() ?? '',
+          style: TextStyle(
+            color: Colors.grey[300],
+            fontSize: 16,
+          ),
+        );
+    }
+  }
+
+  Color _getFieldTypeColor(String type) {
+    switch (type) {
+      case 'text':
+        return Colors.blue;
+      case 'boolean':
+        return Colors.green;
+      case 'hidden':
+        return Colors.orange;
+      case 'linked':
+        return Colors.purple;
+      default:
+        return Colors.grey;
     }
   }
 

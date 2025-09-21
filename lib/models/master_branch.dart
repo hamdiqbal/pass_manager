@@ -1,36 +1,42 @@
+import 'custom_field.dart';
 import 'subcategory.dart';
 
-class MasterBranch {
+class MasterBranchModel {
   final String id;
   final String name;
-  final String additionalField;
   final String description;
+  final String additionalField;
+  final List<CustomField> customFields;
   final List<Subcategory> subcategories;
   final DateTime createdAt;
 
-  MasterBranch({
+  MasterBranchModel({
     required this.id,
     required this.name,
-    required this.additionalField,
     required this.description,
+    required this.additionalField,
+    List<CustomField>? customFields,
     List<Subcategory>? subcategories,
     DateTime? createdAt,
-  }) : subcategories = subcategories ?? [],
+  }) : customFields = customFields ?? <CustomField>[],
+        subcategories = subcategories ?? <Subcategory>[],
         createdAt = createdAt ?? DateTime.now();
 
-  MasterBranch copyWith({
+  MasterBranchModel copyWith({
     String? id,
     String? name,
-    String? additionalField,
     String? description,
+    String? additionalField,
+    List<CustomField>? customFields,
     List<Subcategory>? subcategories,
     DateTime? createdAt,
   }) {
-    return MasterBranch(
+    return MasterBranchModel(
       id: id ?? this.id,
       name: name ?? this.name,
-      additionalField: additionalField ?? this.additionalField,
       description: description ?? this.description,
+      additionalField: additionalField ?? this.additionalField,
+      customFields: customFields ?? this.customFields,
       subcategories: subcategories ?? this.subcategories,
       createdAt: createdAt ?? this.createdAt,
     );
@@ -40,23 +46,30 @@ class MasterBranch {
     return {
       'id': id,
       'name': name,
-      'additionalField': additionalField,
       'description': description,
+      'additionalField': additionalField,
+      'customFields': customFields.map((f) => f.toJson()).toList(),
       'subcategories': subcategories.map((s) => s.toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
     };
   }
 
-  static MasterBranch fromJson(Map<String, dynamic> json) {
-    return MasterBranch(
+  static MasterBranchModel fromJson(Map<String, dynamic> json) {
+    return MasterBranchModel(
       id: json['id'],
       name: json['name'],
-      additionalField: json['additionalField'],
       description: json['description'],
+      additionalField: json['additionalField'] ?? '',
+      customFields: (json['customFields'] as List?)
+          ?.map((f) => CustomField.fromJson(f))
+          .toList() ?? <CustomField>[],
       subcategories: (json['subcategories'] as List?)
           ?.map((s) => Subcategory.fromJson(s))
-          .toList() ?? [],
+          .toList() ?? <Subcategory>[],
       createdAt: DateTime.parse(json['createdAt']),
     );
   }
 }
+
+// Alias for compatibility
+typedef MasterBranch = MasterBranchModel;
