@@ -126,13 +126,13 @@ class _LoginPageState extends State<LoginPage> {
                           size: 40,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 6),
                       const Text(
                         'SecurePass',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -187,7 +187,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black),
                           decoration: const InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(color: Color(0xFF8E8E93)),
@@ -226,7 +226,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black),
                           decoration: InputDecoration(
                             labelText: 'Password',
                             labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
@@ -283,10 +283,13 @@ class _LoginPageState extends State<LoginPage> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: _isLoading ? null : _signIn,
+                          onPressed: _isLoading ? () {} : _signIn,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF3E2411),
                             foregroundColor: Colors.white,
+                            overlayColor: const Color(0xFF5D3A1A),
+                            disabledBackgroundColor: const Color(0xFF3E2411),
+                            disabledForegroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),

@@ -89,7 +89,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: const Color(0xFF3E2411),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -129,13 +129,13 @@ class _SignUpPageState extends State<SignUpPage> {
                           size: 40,
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 6),
                       const Text(
                         'Create Account',
                         style: TextStyle(
                           fontSize: 32,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -171,7 +171,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black),
                           decoration: const InputDecoration(
                             labelText: 'Email',
                             labelStyle: TextStyle(color: Color(0xFF8E8E93)),
@@ -210,7 +210,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: TextFormField(
                           controller: _passwordController,
                           obscureText: _obscurePassword,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black),
                           decoration: InputDecoration(
                             labelText: 'Password',
                             labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
@@ -261,7 +261,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: TextFormField(
                           controller: _confirmPasswordController,
                           obscureText: _obscureConfirmPassword,
-                          style: const TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.black),
                           decoration: InputDecoration(
                             labelText: 'Confirm Password',
                             labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
@@ -335,10 +335,13 @@ class _SignUpPageState extends State<SignUpPage> {
                         width: double.infinity,
                         height: 56,
                         child: ElevatedButton(
-                          onPressed: _isLoading ? null : _signUp,
+                          onPressed: _isLoading ? () {} : _signUp,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFF3E2411),
                             foregroundColor: Colors.white,
+                            overlayColor: const Color(0xFF5D3A1A),
+                            disabledBackgroundColor: const Color(0xFF3E2411),
+                            disabledForegroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
                             ),
