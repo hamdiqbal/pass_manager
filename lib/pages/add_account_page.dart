@@ -698,28 +698,32 @@ class _AddAccountPageState extends State<AddAccountPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: Colors.grey[900],
+          backgroundColor: Colors.white,
           title: Text(
             title,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
           ),
           content: Text(
             content,
-            style: TextStyle(color: Colors.grey[300]),
+            style: const TextStyle(color: Colors.black87),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: const Text(
                 'Cancel',
-                style: TextStyle(color: Color(0xFF3E2411)),
+                style: TextStyle(color: Colors.grey),
               ),
             ),
-            TextButton(
+            ElevatedButton(
               onPressed: () => Navigator.of(context).pop(true),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF3E2411),
+                foregroundColor: Colors.white,
+              ),
               child: const Text(
                 'Delete',
-                style: TextStyle(color: Colors.red),
+                style: TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],
