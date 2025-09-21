@@ -115,6 +115,16 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                               ],
                             ),
                           ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                              size: 20,
+                            ),
+                            onPressed: _deleteMasterBranch,
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -727,6 +737,58 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
             ),
           );
         }
+      }
+    }
+  }
+
+  Future<void> _deleteMasterBranch() async {
+    // First confirmation popup
+    final firstConfirmed = await _showDeleteConfirmation(
+      context,
+      'Delete Master Branch',
+      'Are you sure you want to delete "${currentMasterBranch.name}"?',
+    );
+
+    if (!firstConfirmed) return;
+
+    // Count subcategories for second confirmation
+    int subcategoryCount = currentMasterBranch.subcategories.length;
+    
+    // Second confirmation popup with subcategory count
+    final secondConfirmed = await _showDeleteConfirmation(
+      context,
+      'Warning: Delete All Data',
+      'You have $subcategoryCount ${subcategoryCount == 1 ? 'category' : 'categories'} in this branch. All subcategories and their accounts will also be deleted. This action cannot be undone.',
+    );
+
+    if (!secondConfirmed) return;
+
+    try {
+      // Delete from Firebase
+      await _firebaseService.deleteMasterBranch(currentMasterBranch.id);
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Master branch deleted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to previous screen (likely master branch list)
+        Navigator.of(context).pop();
+        Navigator.of(context).pop(); // Pop twice to go back to main screen
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting master branch: $e'),
+            backgroundColor: Colors.red[600],
+          ),
+        );
       }
     }
   }

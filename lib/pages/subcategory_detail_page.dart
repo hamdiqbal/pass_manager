@@ -120,6 +120,16 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                               ],
                             ),
                           ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete,
+                              color: Colors.red,
+                              size: 20,
+                            ),
+                            onPressed: _deleteSubcategory,
+                            padding: const EdgeInsets.all(4),
+                            constraints: const BoxConstraints(),
+                          ),
                         ],
                       ),
                       const SizedBox(height: 24),
@@ -668,6 +678,60 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
             ),
           );
         }
+      }
+    }
+  }
+
+  Future<void> _deleteSubcategory() async {
+    // First confirmation popup
+    final firstConfirmed = await _showDeleteConfirmation(
+      context,
+      'Delete Subcategory',
+      'Are you sure you want to delete "${currentSubcategory.name}"?',
+    );
+
+    if (!firstConfirmed) return;
+
+    // Count accounts for second confirmation
+    int accountCount = currentSubcategory.accounts.length;
+    
+    // Second confirmation popup with account count
+    final secondConfirmed = await _showDeleteConfirmation(
+      context,
+      'Warning: Delete All Data',
+      'You have $accountCount ${accountCount == 1 ? 'account' : 'accounts'} in this subcategory. All accounts will also be deleted. This action cannot be undone.',
+    );
+
+    if (!secondConfirmed) return;
+
+    try {
+      // Delete from Firebase
+      await _firebaseService.deleteSubcategoryFromMasterBranch(
+        widget.masterBranchId,
+        currentSubcategory.id,
+      );
+
+      // Show success message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Subcategory deleted successfully!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+
+        // Navigate back to master branch detail page
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error deleting subcategory: $e'),
+            backgroundColor: Colors.red[600],
+          ),
+        );
       }
     }
   }

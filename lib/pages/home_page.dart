@@ -305,26 +305,10 @@ class _HomePageState extends State<HomePage> {
                                 color: Colors.grey[600],
                               ),
                             ),
-                            trailing: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(
-                                    Icons.delete,
-                                    color: Colors.red,
-                                    size: 20,
-                                  ),
-                                  onPressed: () => _deleteMasterBranch(masterBranch),
-                                  padding: const EdgeInsets.all(4),
-                                  constraints: const BoxConstraints(),
-                                ),
-                                const SizedBox(width: 8),
-                                const Icon(
-                                  Icons.arrow_forward_ios,
-                                  color: Color(0xFF3E2411),
-                                  size: 16,
-                                ),
-                              ],
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Color(0xFF3E2411),
+                              size: 16,
                             ),
                             onTap: () => _navigateToMasterBranchDetail(masterBranch),
                           ),
