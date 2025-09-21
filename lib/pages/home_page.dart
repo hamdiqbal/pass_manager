@@ -300,7 +300,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                             subtitle: Text(
-                              masterBranch.additionalField,
+                              '${masterBranch.subcategories.length} categories',
                               style: TextStyle(
                                 color: Colors.grey[600],
                               ),

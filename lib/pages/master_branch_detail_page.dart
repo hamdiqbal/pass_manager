@@ -191,90 +191,57 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  GridView.builder(
+                  ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                      childAspectRatio: 0.9,
-                    ),
                     itemCount: currentMasterBranch.subcategories.length,
                     itemBuilder: (context, index) {
                       final subcategory = currentMasterBranch.subcategories[index];
-                      return GestureDetector(
-                        onTap: () => _navigateToSubcategoryDetail(subcategory),
-                        child: Container(
-                          padding: const EdgeInsets.all(12),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF5F5F5),
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(
-                              color: Colors.grey[300]!,
-                              width: 1,
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFF5F5F5),
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(
+                            color: Colors.grey[300]!,
+                            width: 1,
+                          ),
+                        ),
+                        child: ListTile(
+                          onTap: () => _navigateToSubcategoryDetail(subcategory),
+                          onLongPress: () => _showSubcategoryOptions(subcategory),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                          leading: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF3E2411).withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: const Icon(
+                              Icons.category,
+                              color: Color(0xFF3E2411),
+                              size: 24,
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.all(6),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFF3E2411).withOpacity(0.2),
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: const Icon(
-                                      Icons.category,
-                                      color: Color(0xFF3E2411),
-                                      size: 16,
-                                    ),
-                                  ),
-                                  IconButton(
-                                    icon: const Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                      size: 14,
-                                    ),
-                                    onPressed: () => _deleteSubcategory(subcategory),
-                                    padding: const EdgeInsets.all(2),
-                                    constraints: const BoxConstraints(),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                subcategory.name,
-                                style: const TextStyle(
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                subcategory.additionalField,
-                                style: TextStyle(
-                                  color: Colors.grey[400],
-                                  fontSize: 11,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                '${subcategory.accounts.length} accounts',
-                                style: TextStyle(
-                                  color: Colors.grey[500],
-                                  fontSize: 11,
-                                ),
-                              ),
-                            ],
+                          title: Text(
+                            subcategory.name,
+                            style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          subtitle: Text(
+                            '${subcategory.accounts.length} accounts',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
+                          ),
+                          trailing: const Icon(
+                            Icons.arrow_forward_ios,
+                            color: Color(0xFF3E2411),
+                            size: 16,
                           ),
                         ),
                       );
@@ -651,6 +618,111 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text('Failed to update master branch: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
+  void _showSubcategoryOptions(Subcategory subcategory) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color(0xFFF5F5F5),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 40,
+              height: 4,
+              decoration: BoxDecoration(
+                color: Colors.grey[400],
+                borderRadius: BorderRadius.circular(2),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Text(
+              subcategory.name,
+              style: const TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.edit, color: Color(0xFF3E2411)),
+              title: const Text('Edit Subcategory', style: TextStyle(color: Colors.black)),
+              onTap: () {
+                Navigator.pop(context);
+                _editSubcategory(subcategory);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete, color: Colors.red),
+              title: const Text('Delete Subcategory', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(context);
+                _deleteSubcategory(subcategory);
+              },
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _editSubcategory(Subcategory subcategory) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => SubcategoryPage(
+          masterBranch: currentMasterBranch,
+          subcategory: subcategory,
+        ),
+      ),
+    );
+
+    if (result != null && result is Subcategory) {
+      try {
+        // Update the subcategory in Firebase
+        await _firebaseService.updateSubcategoryInMasterBranch(
+          currentMasterBranch.id, 
+          result
+        );
+        
+        // Update local state
+        setState(() {
+          final index = currentMasterBranch.subcategories.indexWhere((s) => s.id == subcategory.id);
+          if (index != -1) {
+            final updatedSubcategories = List<Subcategory>.from(currentMasterBranch.subcategories);
+            updatedSubcategories[index] = result;
+            currentMasterBranch = currentMasterBranch.copyWith(subcategories: updatedSubcategories);
+          }
+        });
+        
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Subcategory updated successfully!'),
+              backgroundColor: Color(0xFF3E2411),
+            ),
+          );
+        }
+      } catch (e) {
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update subcategory: $e'),
               backgroundColor: Colors.red,
             ),
           );
