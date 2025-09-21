@@ -92,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
@@ -110,11 +110,11 @@ class _LoginPageState extends State<LoginPage> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4A90E2),
+                          color: const Color(0xFF3E2411),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF4A90E2).withOpacity(0.3),
+                              color: const Color(0xFF3E2411).withOpacity(0.3),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -155,7 +155,7 @@ class _LoginPageState extends State<LoginPage> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -163,7 +163,7 @@ class _LoginPageState extends State<LoginPage> {
                   'Sign in to access your secure vault',
                   style: TextStyle(
                     fontSize: 16,
-                    color: Colors.grey[400],
+                    color: Colors.grey[600],
                   ),
                 ),
                 
@@ -177,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                       // Email Field
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1F2E),
+                          color: const Color(0xFFF5F5F5),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: Colors.grey[800]!,
@@ -193,7 +193,7 @@ class _LoginPageState extends State<LoginPage> {
                             labelStyle: TextStyle(color: Color(0xFF8E8E93)),
                             prefixIcon: Icon(
                               Icons.email_outlined,
-                              color: Color(0xFF4A90E2),
+                              color: Color(0xFF3E2411),
                             ),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.all(20),
@@ -216,7 +216,7 @@ class _LoginPageState extends State<LoginPage> {
                       // Password Field
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1F2E),
+                          color: const Color(0xFFF5F5F5),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: Colors.grey[800]!,
@@ -232,7 +232,7 @@ class _LoginPageState extends State<LoginPage> {
                             labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
                             prefixIcon: const Icon(
                               Icons.lock_outline,
-                              color: Color(0xFF4A90E2),
+                              color: Color(0xFF3E2411),
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -269,7 +269,7 @@ class _LoginPageState extends State<LoginPage> {
                           child: const Text(
                             'Forgot Password?',
                             style: TextStyle(
-                              color: Color(0xFF4A90E2),
+                              color: Color(0xFF3E2411),
                               fontWeight: FontWeight.w500,
                             ),
                           ),
@@ -285,7 +285,7 @@ class _LoginPageState extends State<LoginPage> {
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _signIn,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4A90E2),
+                            backgroundColor: const Color(0xFF3E2411),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -336,7 +336,7 @@ class _LoginPageState extends State<LoginPage> {
                             child: const Text(
                               'Sign Up',
                               style: TextStyle(
-                                color: Color(0xFF4A90E2),
+                                color: Color(0xFF3E2411),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),

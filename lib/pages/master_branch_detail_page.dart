@@ -33,9 +33,9 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: const Color(0xFF3E2411),
         elevation: 0,
         title: Text(
           currentMasterBranch.name,
@@ -67,10 +67,10 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1F2E),
+                    color: const Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.grey[800]!,
+                      color: Colors.grey[300]!,
                       width: 1,
                     ),
                   ),
@@ -82,12 +82,12 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF4A90E2).withOpacity(0.2),
+                              color: const Color(0xFF3E2411).withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(
                               Icons.folder,
-                              color: Color(0xFF4A90E2),
+                              color: Color(0xFF3E2411),
                               size: 32,
                             ),
                           ),
@@ -101,7 +101,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                                   style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -123,7 +123,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -131,7 +131,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                         currentMasterBranch.description,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey[300],
+                          color: Colors.grey[600],
                           height: 1.5,
                         ),
                       ),
@@ -144,7 +144,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -162,7 +162,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                   child: ElevatedButton(
                     onPressed: _navigateToSubcategoryPage,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4A90E2),
+                      backgroundColor: const Color(0xFF3E2411),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -187,7 +187,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -208,10 +208,10 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                         child: Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF1A1F2E),
+                            color: const Color(0xFFF5F5F5),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: Colors.grey[800]!,
+                              color: Colors.grey[300]!,
                               width: 1,
                             ),
                           ),
@@ -224,12 +224,12 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                                   Container(
                                     padding: const EdgeInsets.all(6),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF4A90E2).withOpacity(0.2),
+                                      color: const Color(0xFF3E2411).withOpacity(0.2),
                                       borderRadius: BorderRadius.circular(6),
                                     ),
                                     child: const Icon(
                                       Icons.category,
-                                      color: Color(0xFF4A90E2),
+                                      color: Color(0xFF3E2411),
                                       size: 16,
                                     ),
                                   ),
@@ -249,7 +249,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                               Text(
                                 subcategory.name,
                                 style: const TextStyle(
-                                  color: Colors.white,
+                                  color: Colors.black,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 14,
                                 ),
@@ -285,10 +285,10 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1A1F2E),
+                      color: const Color(0xFFF5F5F5),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.grey[800]!,
+                        color: Colors.grey[300]!,
                         width: 1,
                       ),
                     ),
@@ -354,7 +354,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Subcategory saved successfully!'),
-              backgroundColor: Color(0xFF4A90E2),
+              backgroundColor: Color(0xFF3E2411),
             ),
           );
         }
@@ -420,10 +420,10 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1A1F2E),
+          backgroundColor: const Color(0xFFF5F5F5),
           title: Text(
             title,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
           ),
           content: Text(
             content,
@@ -434,7 +434,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
               onPressed: () => Navigator.of(context).pop(false),
               child: const Text(
                 'Cancel',
-                style: TextStyle(color: Color(0xFF4A90E2)),
+                style: TextStyle(color: Color(0xFF3E2411)),
               ),
             ),
             TextButton(
@@ -499,10 +499,10 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F2E),
+        color: const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey[800]!,
+          color: Colors.grey[300]!,
           width: 1,
         ),
       ),
@@ -517,7 +517,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               Container(
@@ -558,7 +558,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
             Text(
               field.value == true ? 'True' : 'False',
               style: TextStyle(
-                color: Colors.grey[300],
+                color: Colors.black,
                 fontSize: 16,
               ),
             ),
@@ -572,7 +572,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
               child: Text(
                 isVisible ? (field.value?.toString() ?? '') : '••••••••',
                 style: TextStyle(
-                  color: Colors.grey[300],
+                  color: Colors.black,
                   fontSize: 16,
                 ),
               ),
@@ -596,7 +596,7 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
         return Text(
           field.value?.toString() ?? '',
           style: TextStyle(
-            color: Colors.grey[300],
+            color: Colors.black,
             fontSize: 16,
           ),
         );
@@ -627,9 +627,35 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
     );
 
     if (result != null && result is MasterBranch) {
-      setState(() {
-        currentMasterBranch = result;
-      });
+      try {
+        // Save to Firebase
+        await _firebaseService.updateMasterBranch(result);
+        
+        // Update local state
+        setState(() {
+          currentMasterBranch = result;
+        });
+        
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Master branch updated successfully!'),
+              backgroundColor: Color(0xFF3E2411),
+            ),
+          );
+        }
+      } catch (e) {
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update master branch: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 }

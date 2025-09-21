@@ -37,9 +37,9 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: const Color(0xFFF5F5F5),
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
@@ -55,7 +55,7 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.edit, color: Color(0xFF4A90E2)),
+            icon: const Icon(Icons.edit, color: Color(0xFF3E2411)),
             onPressed: () => _editAccount(),
           ),
           IconButton(
@@ -74,7 +74,7 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFF1A1F2E),
+                color: const Color(0xFFF5F5F5),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
                   color: Colors.grey[800]!,
@@ -89,12 +89,12 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
                       Container(
                         padding: const EdgeInsets.all(12),
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4A90E2).withOpacity(0.2),
+                          color: const Color(0xFF3E2411).withOpacity(0.2),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: const Icon(
                           Icons.account_circle,
-                          color: Color(0xFF4A90E2),
+                          color: Color(0xFF3E2411),
                           size: 32,
                         ),
                       ),
@@ -240,7 +240,7 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
       width: double.infinity,
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F2E),
+        color: const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
           color: Colors.grey[800]!,
@@ -254,7 +254,7 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
             children: [
               Icon(
                 icon,
-                color: const Color(0xFF4A90E2),
+                color: const Color(0xFF3E2411),
                 size: 20,
               ),
               const SizedBox(width: 8),
@@ -310,7 +310,7 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('$label copied to clipboard'),
-        backgroundColor: const Color(0xFF4A90E2),
+        backgroundColor: const Color(0xFF3E2411),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -407,7 +407,7 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
     return await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: const Color(0xFFF5F5F5),
         title: const Text(
           'Delete Account',
           style: TextStyle(color: Colors.white),

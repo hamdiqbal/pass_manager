@@ -38,9 +38,9 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: const Color(0xFF3E2411),
         elevation: 0,
         title: Text(
           currentSubcategory.name,
@@ -72,10 +72,10 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF1A1F2E),
+                    color: const Color(0xFFF5F5F5),
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(
-                      color: Colors.grey[800]!,
+                      color: Colors.grey[300]!,
                       width: 1,
                     ),
                   ),
@@ -87,12 +87,12 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF4A90E2).withOpacity(0.2),
+                              color: const Color(0xFF3E2411).withOpacity(0.2),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: const Icon(
                               Icons.category,
-                              color: Color(0xFF4A90E2),
+                              color: Color(0xFF3E2411),
                               size: 32,
                             ),
                           ),
@@ -106,7 +106,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                                   style: const TextStyle(
                                     fontSize: 24,
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.white,
+                                    color: Colors.black,
                                   ),
                                 ),
                                 const SizedBox(height: 4),
@@ -128,7 +128,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -136,7 +136,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                         currentSubcategory.description,
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.grey[300],
+                          color: Colors.grey[600],
                           height: 1.5,
                         ),
                       ),
@@ -149,7 +149,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                            color: Colors.black,
                           ),
                         ),
                         const SizedBox(height: 12),
@@ -167,7 +167,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                   child: ElevatedButton(
                     onPressed: _navigateToAddAccount,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4A90E2),
+                      backgroundColor: const Color(0xFF3E2411),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -192,7 +192,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -205,11 +205,11 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: Card(
-                          color: const Color(0xFF1A1F2E),
+                          color: const Color(0xFFF5F5F5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                             side: BorderSide(
-                              color: Colors.grey[800]!,
+                              color: Colors.grey[300]!,
                               width: 1,
                             ),
                           ),
@@ -217,25 +217,25 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                             leading: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF4A90E2).withOpacity(0.2),
+                                color: const Color(0xFF3E2411).withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(
                                 Icons.account_circle,
-                                color: Color(0xFF4A90E2),
+                                color: Color(0xFF3E2411),
                               ),
                             ),
                             title: Text(
                               account.name,
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             subtitle: Text(
                               account.username,
                               style: TextStyle(
-                                color: Colors.grey[400],
+                                color: Colors.grey[600],
                               ),
                             ),
                             trailing: Row(
@@ -254,7 +254,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                                 const SizedBox(width: 4),
                                 const Icon(
                                   Icons.arrow_forward_ios,
-                                  color: Color(0xFF4A90E2),
+                                  color: Color(0xFF3E2411),
                                   size: 16,
                                 ),
                               ],
@@ -270,10 +270,10 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(24),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1A1F2E),
+                      color: const Color(0xFFF5F5F5),
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
-                        color: Colors.grey[800]!,
+                        color: Colors.grey[300]!,
                         width: 1,
                       ),
                     ),
@@ -343,7 +343,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Account saved successfully!'),
-              backgroundColor: Color(0xFF4A90E2),
+              backgroundColor: Color(0xFF3E2411),
             ),
           );
         }
@@ -431,10 +431,10 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1A1F2E),
+          backgroundColor: const Color(0xFFF5F5F5),
           title: Text(
             title,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
           ),
           content: Text(
             content,
@@ -445,7 +445,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
               onPressed: () => Navigator.of(context).pop(false),
               child: const Text(
                 'Cancel',
-                style: TextStyle(color: Color(0xFF4A90E2)),
+                style: TextStyle(color: Color(0xFF3E2411)),
               ),
             ),
             TextButton(
@@ -514,10 +514,10 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F2E),
+        color: const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey[800]!,
+          color: Colors.grey[300]!,
           width: 1,
         ),
       ),
@@ -532,7 +532,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               Container(
@@ -573,7 +573,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
             Text(
               field.value == true ? 'True' : 'False',
               style: TextStyle(
-                color: Colors.grey[300],
+                color: Colors.black,
                 fontSize: 16,
               ),
             ),
@@ -587,7 +587,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
               child: Text(
                 isVisible ? (field.value?.toString() ?? '') : '••••••••',
                 style: TextStyle(
-                  color: Colors.grey[300],
+                  color: Colors.black,
                   fontSize: 16,
                 ),
               ),
@@ -611,7 +611,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
         return Text(
           field.value?.toString() ?? '',
           style: TextStyle(
-            color: Colors.grey[300],
+            color: Colors.black,
             fontSize: 16,
           ),
         );
@@ -650,9 +650,41 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
     );
 
     if (result != null && result is Subcategory) {
-      setState(() {
-        currentSubcategory = result.copyWith(accounts: currentSubcategory.accounts); // Preserve existing accounts
-      });
+      try {
+        // Preserve existing accounts when updating
+        final updatedSubcategory = result.copyWith(accounts: currentSubcategory.accounts);
+        
+        // Save to Firebase by updating the subcategory in the master branch
+        await _firebaseService.updateSubcategoryInMasterBranch(
+          widget.masterBranchId, 
+          updatedSubcategory
+        );
+        
+        // Update local state
+        setState(() {
+          currentSubcategory = updatedSubcategory;
+        });
+        
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Subcategory updated successfully!'),
+              backgroundColor: Color(0xFF3E2411),
+            ),
+          );
+        }
+      } catch (e) {
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update subcategory: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
     }
   }
 }

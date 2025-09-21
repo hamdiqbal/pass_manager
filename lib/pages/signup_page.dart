@@ -87,7 +87,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -113,11 +113,11 @@ class _SignUpPageState extends State<SignUpPage> {
                         width: 80,
                         height: 80,
                         decoration: BoxDecoration(
-                          color: const Color(0xFF4A90E2),
+                          color: const Color(0xFF3E2411),
                           borderRadius: BorderRadius.circular(20),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color(0xFF4A90E2).withOpacity(0.3),
+                              color: const Color(0xFF3E2411).withOpacity(0.3),
                               blurRadius: 20,
                               offset: const Offset(0, 10),
                             ),
@@ -161,7 +161,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       // Email Field
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1F2E),
+                          color: const Color(0xFFF5F5F5),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: Colors.grey[800]!,
@@ -177,7 +177,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             labelStyle: TextStyle(color: Color(0xFF8E8E93)),
                             prefixIcon: Icon(
                               Icons.email_outlined,
-                              color: Color(0xFF4A90E2),
+                              color: Color(0xFF3E2411),
                             ),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.all(20),
@@ -200,7 +200,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       // Password Field
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1F2E),
+                          color: const Color(0xFFF5F5F5),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: Colors.grey[800]!,
@@ -216,7 +216,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
                             prefixIcon: const Icon(
                               Icons.lock_outline,
-                              color: Color(0xFF4A90E2),
+                              color: Color(0xFF3E2411),
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -251,7 +251,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       // Confirm Password Field
                       Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFF1A1F2E),
+                          color: const Color(0xFFF5F5F5),
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(
                             color: Colors.grey[800]!,
@@ -267,7 +267,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             labelStyle: const TextStyle(color: Color(0xFF8E8E93)),
                             prefixIcon: const Icon(
                               Icons.lock_outline,
-                              color: Color(0xFF4A90E2),
+                              color: Color(0xFF3E2411),
                             ),
                             suffixIcon: IconButton(
                               icon: Icon(
@@ -310,7 +310,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                 _agreeToTerms = value ?? false;
                               });
                             },
-                            activeColor: const Color(0xFF4A90E2),
+                            activeColor: const Color(0xFF3E2411),
                             checkColor: Colors.white,
                           ),
                           Expanded(
@@ -337,7 +337,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         child: ElevatedButton(
                           onPressed: _isLoading ? null : _signUp,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4A90E2),
+                            backgroundColor: const Color(0xFF3E2411),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -383,7 +383,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             child: const Text(
                               'Sign In',
                               style: TextStyle(
-                                color: Color(0xFF4A90E2),
+                                color: Color(0xFF3E2411),
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
                               ),

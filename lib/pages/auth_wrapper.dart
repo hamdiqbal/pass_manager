@@ -17,10 +17,10 @@ class AuthWrapper extends StatelessWidget {
         // Show loading indicator while waiting for auth state
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            backgroundColor: Color(0xFF0F1419),
+            backgroundColor: Colors.white,
             body: Center(
               child: CircularProgressIndicator(
-                color: Color(0xFF4A90E2),
+                color: Color(0xFF3E2411),
               ),
             ),
           );
@@ -34,10 +34,10 @@ class AuthWrapper extends StatelessWidget {
             builder: (context, biometricSnapshot) {
               if (biometricSnapshot.connectionState == ConnectionState.waiting) {
                 return const Scaffold(
-                  backgroundColor: Color(0xFF0F1419),
+                  backgroundColor: Colors.white,
                   body: Center(
                     child: CircularProgressIndicator(
-                      color: Color(0xFF4A90E2),
+                      color: Color(0xFF3E2411),
                     ),
                   ),
                 );
@@ -60,10 +60,10 @@ class AuthWrapper extends StatelessWidget {
           builder: (context, storedUserSnapshot) {
             if (storedUserSnapshot.connectionState == ConnectionState.waiting) {
               return const Scaffold(
-                backgroundColor: Color(0xFF0F1419),
+                backgroundColor: Colors.white,
                 body: Center(
                   child: CircularProgressIndicator(
-                    color: Color(0xFF4A90E2),
+                    color: Color(0xFF3E2411),
                   ),
                 ),
               );

@@ -60,9 +60,9 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: const Color(0xFF3E2411),
         elevation: 0,
         title: Text(
           isEditing ? 'Edit Subcategory' : 'Add Subcategory',
@@ -90,10 +90,10 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: const Color(0xFF1A1F2E),
+                      color: const Color(0xFFF5F5F5),
                       borderRadius: BorderRadius.circular(12),
                       border: Border.all(
-                        color: Colors.grey[800]!,
+                        color: Colors.grey[300]!,
                         width: 1,
                       ),
                     ),
@@ -101,14 +101,14 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                       children: [
                         const Icon(
                           Icons.folder,
-                          color: Color(0xFF4A90E2),
+                          color: Color(0xFF3E2411),
                         ),
                         const SizedBox(width: 12),
-                        Text(
+                          Text(
                           'Parent: ${widget.masterBranch.name}',
                           style: TextStyle(
                             fontSize: 16,
-                            color: Colors.grey[300],
+                            color: Colors.grey[600],
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -122,7 +122,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -132,7 +132,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                       : 'Fill in the details to create a new subcategory',
                     style: TextStyle(
                       fontSize: 16,
-                      color: Colors.grey[400],
+                      color: Colors.grey[600],
                     ),
                   ),
                   const SizedBox(height: 40),
@@ -160,7 +160,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: Colors.black,
                         ),
                       ),
                       ElevatedButton.icon(
@@ -168,7 +168,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                         icon: const Icon(Icons.add, size: 16),
                         label: const Text('Add Custom Field'),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4A90E2),
+                          backgroundColor: const Color(0xFF3E2411),
                           foregroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -186,16 +186,11 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                   
                   // Description Field
                   _buildInputField(
-                    label: 'Description',
+                    label: 'Description (Optional)',
                     controller: _descriptionController,
                     icon: Icons.description,
                     maxLines: 4,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter a description';
-                      }
-                      return null;
-                    },
+                    validator: null, // Make description optional
                   ),
                   const SizedBox(height: 40),
                   
@@ -206,7 +201,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                     child: ElevatedButton(
                       onPressed: _saveSubcategory,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4A90E2),
+                        backgroundColor: const Color(0xFF3E2411),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -246,7 +241,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
           style: const TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
-            color: Colors.white,
+            color: Colors.black,
           ),
         ),
         const SizedBox(height: 8),
@@ -254,11 +249,11 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
           controller: controller,
           validator: validator,
           maxLines: maxLines,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
-            prefixIcon: Icon(icon, color: const Color(0xFF4A90E2)),
+            prefixIcon: Icon(icon, color: const Color(0xFF3E2411)),
             filled: true,
-            fillColor: const Color(0xFF1A1F2E),
+            fillColor: const Color(0xFFF5F5F5),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: BorderSide.none,
@@ -266,7 +261,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(
-                color: Color(0xFF4A90E2),
+                color: Color(0xFF3E2411),
                 width: 2,
               ),
             ),
@@ -340,10 +335,10 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1A1F2E),
+        color: const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey[800]!,
+          color: Colors.grey[300]!,
           width: 1,
         ),
       ),
@@ -358,7 +353,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
                 style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: Colors.white,
+                  color: Colors.black,
                 ),
               ),
               Row(
@@ -405,24 +400,24 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
               value: 'true',
               groupValue: controller.text.isEmpty ? null : controller.text,
               onChanged: (value) => setState(() => controller.text = value!),
-              activeColor: const Color(0xFF4A90E2),
+              activeColor: const Color(0xFF3E2411),
             ),
-            const Text('True', style: TextStyle(color: Colors.white)),
+            const Text('True', style: TextStyle(color: Colors.black)),
             const SizedBox(width: 16),
             Radio<String>(
               value: 'false',
               groupValue: controller.text.isEmpty ? null : controller.text,
               onChanged: (value) => setState(() => controller.text = value!),
-              activeColor: const Color(0xFF4A90E2),
+              activeColor: const Color(0xFF3E2411),
             ),
-            const Text('False', style: TextStyle(color: Colors.white)),
+            const Text('False', style: TextStyle(color: Colors.black)),
           ],
         );
       case 'hidden':
         return TextFormField(
           controller: controller,
           obscureText: !(hiddenFieldVisibility[field.id] ?? false),
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.black),
           decoration: _getFieldDecoration('Enter ${field.name}').copyWith(
             suffixIcon: IconButton(
               icon: Icon(
@@ -444,7 +439,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       default:
         return TextFormField(
           controller: controller,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.black),
           decoration: _getFieldDecoration('Enter ${field.name}'),
         );
     }
@@ -453,7 +448,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
   InputDecoration _getFieldDecoration(String hint) {
     return InputDecoration(
       filled: true,
-      fillColor: const Color(0xFF0F1419),
+      fillColor: const Color(0xFFF8F8F8),
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide.none,
@@ -461,7 +456,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: const BorderSide(
-          color: Color(0xFF4A90E2),
+          color: Color(0xFF3E2411),
           width: 2,
         ),
       ),
@@ -493,17 +488,17 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: const Color(0xFFF5F5F5),
         title: const Text(
           'Add Custom Field',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black),
         ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
               'Choose field type:',
-              style: TextStyle(color: Colors.white),
+              style: TextStyle(color: Colors.black),
             ),
             const SizedBox(height: 16),
             _buildFieldTypeButton('text', 'Text', Icons.text_fields),
@@ -545,14 +540,14 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: const Color(0xFFF5F5F5),
         title: const Text(
           'Enter Field Name',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.black),
         ),
         content: TextFormField(
           controller: nameController,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.black),
           decoration: _getFieldDecoration('Field name'),
           autofocus: true,
         ),
@@ -569,7 +564,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
               }
             },
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFF4A90E2),
+              backgroundColor: const Color(0xFF3E2411),
             ),
             child: const Text('Add'),
           ),

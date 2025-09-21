@@ -1,3 +1,5 @@
+import 'custom_field.dart';
+
 class Account {
   final String id;
   final String name;
@@ -6,7 +8,7 @@ class Account {
   final String url;
   final String authenticationKey;
   final String description;
-  final String additionalSpace;
+  final List<CustomField> customFields;
   final DateTime createdAt;
 
   Account({
@@ -17,9 +19,19 @@ class Account {
     required this.url,
     required this.authenticationKey,
     required this.description,
-    required this.additionalSpace,
+    List<CustomField>? customFields,
     DateTime? createdAt,
-  }) : createdAt = createdAt ?? DateTime.now();
+  }) : customFields = customFields ?? [],
+        createdAt = createdAt ?? DateTime.now();
+
+  // Legacy getter for compatibility with existing code
+  String get additionalSpace {
+    final textField = customFields.firstWhere(
+      (field) => field.type == 'text',
+      orElse: () => CustomField(id: '', name: '', type: 'text', value: ''),
+    );
+    return textField.value?.toString() ?? '';
+  }
 
   Account copyWith({
     String? id,
@@ -29,7 +41,7 @@ class Account {
     String? url,
     String? authenticationKey,
     String? description,
-    String? additionalSpace,
+    List<CustomField>? customFields,
     DateTime? createdAt,
   }) {
     return Account(
@@ -40,7 +52,7 @@ class Account {
       url: url ?? this.url,
       authenticationKey: authenticationKey ?? this.authenticationKey,
       description: description ?? this.description,
-      additionalSpace: additionalSpace ?? this.additionalSpace,
+      customFields: customFields ?? this.customFields,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -54,7 +66,7 @@ class Account {
       'url': url,
       'authenticationKey': authenticationKey,
       'description': description,
-      'additionalSpace': additionalSpace,
+      'customFields': customFields.map((f) => f.toJson()).toList(),
       'createdAt': createdAt.toIso8601String(),
     };
   }
@@ -68,7 +80,9 @@ class Account {
       url: json['url'],
       authenticationKey: json['authenticationKey'],
       description: json['description'],
-      additionalSpace: json['additionalSpace'],
+      customFields: (json['customFields'] as List?)
+          ?.map((f) => CustomField.fromJson(f))
+          .toList() ?? [],
       createdAt: DateTime.parse(json['createdAt']),
     );
   }

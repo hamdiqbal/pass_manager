@@ -54,9 +54,9 @@ class _HomePageState extends State<HomePage> {
     final user = authService.currentUser;
 
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: Colors.white,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF1A1F2E),
+        backgroundColor: const Color(0xFF3E2411),
         elevation: 0,
         title: const Text(
           'SecurePass',
@@ -79,7 +79,7 @@ class _HomePageState extends State<HomePage> {
                   builder: (BuildContext context) {
                     return const Center(
                       child: CircularProgressIndicator(
-                        color: Color(0xFF4A90E2),
+                        color: Color(0xFF3E2411),
                       ),
                     );
                   },
@@ -126,7 +126,7 @@ class _HomePageState extends State<HomePage> {
         child: _isLoading
             ? const Center(
                 child: CircularProgressIndicator(
-                  color: Color(0xFF4A90E2),
+                  color: Color(0xFF3E2411),
                 ),
               )
             : _error != null
@@ -161,7 +161,7 @@ class _HomePageState extends State<HomePage> {
                         ElevatedButton(
                           onPressed: _loadMasterBranches,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4A90E2),
+                            backgroundColor: const Color(0xFF3E2411),
                           ),
                           child: const Text(
                             'Retry',
@@ -181,11 +181,11 @@ class _HomePageState extends State<HomePage> {
                   width: 120,
                   height: 120,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF4A90E2),
+                    color: const Color(0xFF3E2411),
                     borderRadius: BorderRadius.circular(30),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF4A90E2).withOpacity(0.3),
+                        color: const Color(0xFF3E2411).withOpacity(0.3),
                         blurRadius: 30,
                         offset: const Offset(0, 15),
                       ),
@@ -203,7 +203,7 @@ class _HomePageState extends State<HomePage> {
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -212,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                   'Hello ${user?.email ?? 'User'}!',
                   style: TextStyle(
                     fontSize: 18,
-                    color: Colors.grey[400],
+                    color: Colors.grey[600],
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -234,7 +234,7 @@ class _HomePageState extends State<HomePage> {
                   child: ElevatedButton(
                     onPressed: _navigateToMasterBranchPage,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4A90E2),
+                      backgroundColor: const Color(0xFF3E2411),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
@@ -259,7 +259,7 @@ class _HomePageState extends State<HomePage> {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Colors.black,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -272,7 +272,7 @@ class _HomePageState extends State<HomePage> {
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
                         child: Card(
-                          color: const Color(0xFF1A1F2E),
+                          color: const Color(0xFFF5F5F5),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
                             side: BorderSide(
@@ -284,25 +284,25 @@ class _HomePageState extends State<HomePage> {
                             leading: Container(
                               padding: const EdgeInsets.all(8),
                               decoration: BoxDecoration(
-                                color: const Color(0xFF4A90E2).withOpacity(0.2),
+                                color: const Color(0xFF3E2411).withOpacity(0.2),
                                 borderRadius: BorderRadius.circular(8),
                               ),
                               child: const Icon(
                                 Icons.folder,
-                                color: Color(0xFF4A90E2),
+                                color: Color(0xFF3E2411),
                               ),
                             ),
                             title: Text(
                               masterBranch.name,
                               style: const TextStyle(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
                             subtitle: Text(
                               masterBranch.additionalField,
                               style: TextStyle(
-                                color: Colors.grey[400],
+                                color: Colors.grey[600],
                               ),
                             ),
                             trailing: Row(
@@ -321,7 +321,7 @@ class _HomePageState extends State<HomePage> {
                                 const SizedBox(width: 8),
                                 const Icon(
                                   Icons.arrow_forward_ios,
-                                  color: Color(0xFF4A90E2),
+                                  color: Color(0xFF3E2411),
                                   size: 16,
                                 ),
                               ],
@@ -365,7 +365,7 @@ class _HomePageState extends State<HomePage> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
               content: Text('Master branch saved successfully!'),
-              backgroundColor: Color(0xFF4A90E2),
+              backgroundColor: Color(0xFF3E2411),
             ),
           );
         }
@@ -423,21 +423,21 @@ class _HomePageState extends State<HomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1A1F2E),
+          backgroundColor: const Color(0xFFF5F5F5),
           title: Text(
             title,
-            style: const TextStyle(color: Colors.white),
+            style: const TextStyle(color: Colors.black),
           ),
           content: Text(
             content,
-            style: TextStyle(color: Colors.grey[300]),
+            style: TextStyle(color: Colors.grey[600]),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),
               child: const Text(
                 'Cancel',
-                style: TextStyle(color: Color(0xFF4A90E2)),
+                style: TextStyle(color: Color(0xFF3E2411)),
               ),
             ),
             TextButton(

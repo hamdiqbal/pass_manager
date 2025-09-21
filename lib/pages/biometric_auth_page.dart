@@ -154,7 +154,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          backgroundColor: const Color(0xFF1A1F2E),
+          backgroundColor: const Color(0xFFF5F5F5),
           title: const Text(
             'No Biometric Authentication Found',
             style: TextStyle(color: Colors.white),
@@ -171,7 +171,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
               },
               child: const Text(
                 'Continue',
-                style: TextStyle(color: Color(0xFF4A90E2)),
+                style: TextStyle(color: Color(0xFF3E2411)),
               ),
             ),
           ],
@@ -195,7 +195,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF0F1419),
+      backgroundColor: Colors.white,
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24.0),
@@ -207,11 +207,11 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF4A90E2),
+                  color: const Color(0xFF3E2411),
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF4A90E2).withOpacity(0.3),
+                      color: const Color(0xFF3E2411).withOpacity(0.3),
                       blurRadius: 30,
                       offset: const Offset(0, 15),
                     ),
@@ -258,7 +258,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                 _biometricType == 'Face ID' 
                     ? Icons.face 
                     : Icons.fingerprint,
-                color: const Color(0xFF4A90E2),
+                color: const Color(0xFF3E2411),
                 size: 80,
               ),
               
@@ -274,7 +274,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                         ? _enableBiometricAndAuthenticate 
                         : _authenticateWithBiometric,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF4A90E2),
+                      backgroundColor: const Color(0xFF3E2411),
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
@@ -327,7 +327,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
                   child: const Text(
                     'Sign Out',
                     style: TextStyle(
-                      color: Color(0xFF4A90E2),
+                      color: Color(0xFF3E2411),
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
                     ),
@@ -336,7 +336,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
               ] else ...[
                 // Loading Indicator
                 const CircularProgressIndicator(
-                  color: Color(0xFF4A90E2),
+                  color: Color(0xFF3E2411),
                 ),
                 const SizedBox(height: 24),
                 Text(
