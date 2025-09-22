@@ -152,8 +152,8 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                   'Description',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -185,8 +185,8 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                     'Custom Fields',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 12),

@@ -125,8 +125,8 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                   'Description',
                   style: TextStyle(
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey,
                   ),
                 ),
                 const SizedBox(height: 8),
@@ -158,8 +158,8 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                     'Custom Fields',
                     style: TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.grey,
                     ),
                   ),
                   const SizedBox(height: 12),
