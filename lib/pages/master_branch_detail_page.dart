@@ -167,6 +167,13 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                 ],
                 const SizedBox(height: 32),
                 
+                // Divider line
+                Divider(
+                  color: Colors.grey[300],
+                  thickness: 1,
+                  height: 32,
+                ),
+                
                 // Subcategories Heading with Add Button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,

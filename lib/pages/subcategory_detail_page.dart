@@ -194,6 +194,13 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                 ],
                 const SizedBox(height: 32),
                 
+                // Divider line
+                Divider(
+                  color: Colors.grey[300],
+                  thickness: 1,
+                  height: 32,
+                ),
+                
                 // Accounts Heading with Add Button
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
