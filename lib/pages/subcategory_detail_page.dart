@@ -194,49 +194,49 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                 ],
                 const SizedBox(height: 32),
                 
-                // Add Account Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _navigateToAddAccount,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3E2411),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                // Accounts Heading with Add Button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Accounts',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      elevation: 0,
                     ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 20,
+                    ElevatedButton(
+                      onPressed: _navigateToAddAccount,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3E2411),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Add Account',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add,
                             color: Colors.white,
+                            size: 16,
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 6),
+                          Text(
+                            'Add Account',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                // Accounts Heading (always shown)
-                const Text(
-                  'Accounts',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 if (currentSubcategory.accounts.isNotEmpty)

@@ -167,49 +167,49 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                 ],
                 const SizedBox(height: 32),
                 
-                // Add Subcategory Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _navigateToSubcategoryPage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3E2411),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                // Subcategories Heading with Add Button
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text(
+                      'Subcategories',
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
                       ),
-                      elevation: 0,
                     ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 20,
+                    ElevatedButton(
+                      onPressed: _navigateToSubcategoryPage,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF3E2411),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Add Subcategory',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
+                        elevation: 0,
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add,
                             color: Colors.white,
+                            size: 16,
                           ),
-                        ),
-                      ],
+                          SizedBox(width: 6),
+                          Text(
+                            'Add Subcategory',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 32),
-                // Subcategories Heading (always shown)
-                const Text(
-                  'Subcategories',
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
+                  ],
                 ),
                 const SizedBox(height: 16),
                 if (currentMasterBranch.subcategories.isNotEmpty)
