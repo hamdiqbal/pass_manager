@@ -228,49 +228,43 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                       final subcategory = currentMasterBranch.subcategories[index];
                       return Container(
                         margin: const EdgeInsets.only(bottom: 12),
-                        decoration: BoxDecoration(
+                        child: Card(
                           color: const Color(0xFFF5F5F5),
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(
-                            color: Colors.grey[300]!,
-                            width: 1,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                        ),
-                        child: ListTile(
-                          onTap: () => _navigateToSubcategoryDetail(subcategory),
-                          onLongPress: () => _showSubcategoryOptions(subcategory),
-                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          leading: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF3E2411).withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(12),
+                          child: ListTile(
+                            onTap: () => _navigateToSubcategoryDetail(subcategory),
+                            onLongPress: () => _showSubcategoryOptions(subcategory),
+                            leading: Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF3E2411).withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Icon(
+                                Icons.category,
+                                color: Color(0xFF3E2411),
+                              ),
                             ),
-                            child: const Icon(
-                              Icons.category,
+                            title: Text(
+                              subcategory.name,
+                              style: const TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            subtitle: Text(
+                              '${subcategory.accounts.length} accounts',
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
                               color: Color(0xFF3E2411),
-                              size: 24,
+                              size: 16,
                             ),
-                          ),
-                          title: Text(
-                            subcategory.name,
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                            ),
-                          ),
-                          subtitle: Text(
-                            '${subcategory.accounts.length} accounts',
-                            style: TextStyle(
-                              color: Colors.grey[600],
-                              fontSize: 14,
-                            ),
-                          ),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                            color: Color(0xFF3E2411),
-                            size: 16,
                           ),
                         ),
                       );
