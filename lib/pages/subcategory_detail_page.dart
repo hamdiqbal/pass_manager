@@ -283,12 +283,6 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                            subtitle: Text(
-                              account.username,
-                              style: TextStyle(
-                                color: Colors.grey[600],
-                              ),
-                            ),
                             trailing: const Icon(
                               Icons.arrow_forward_ios,
                               color: Color(0xFF3E2411),
