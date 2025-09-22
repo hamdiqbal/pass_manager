@@ -75,7 +75,7 @@ class AppConstants {
   static const Duration longDuration = Duration(milliseconds: 500);
 
   // App Strings
-  static const String appName = 'Pass Manager';
+  static const String appName = 'Three Ace Pass Manager';
   static const String noItemsMessage = 'No items present';
   
   // Error Messages

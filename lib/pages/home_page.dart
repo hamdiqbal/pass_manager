@@ -68,7 +68,7 @@ class _HomePageState extends State<HomePage> {
         backgroundColor: const Color(0xFF3E2411),
         elevation: 0,
         title: const Text(
-          'SecurePass',
+          'Three Ace Pass Manager',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -208,7 +208,7 @@ class _HomePageState extends State<HomePage> {
                 ),
                 const SizedBox(height: 32),
                 const Text(
-                  'Welcome to SecurePass!',
+                  'Welcome to Three Ace Pass Manager!',
                   style: TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,

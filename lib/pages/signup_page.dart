@@ -140,7 +140,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Join SecurePass to protect your passwords',
+                        'Join Three Ace Pass Manager to protect your passwords',
                         style: TextStyle(
                           fontSize: 16,
                           color: Colors.grey[400],
