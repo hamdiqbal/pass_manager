@@ -389,6 +389,9 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
             backgroundColor: Colors.green,
           ),
         );
+        
+        // Return the updated account to the subcategory detail page
+        Navigator.pop(context, updatedAccount);
       }
     } catch (e) {
       if (mounted) {

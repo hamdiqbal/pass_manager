@@ -23,6 +23,8 @@ class _AddAccountPageState extends State<AddAccountPage> {
   final TextEditingController _descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _passwordVisible = false;
+  bool _authKeyVisible = false; // For auth key visibility toggle
+  bool _useAuthKey = false; // Toggle for authentication key usage
   bool get _isEditing => widget.account != null;
   
   List<CustomField> customFields = [];
@@ -42,6 +44,9 @@ class _AddAccountPageState extends State<AddAccountPage> {
       _authKeyController.text = widget.account!.authenticationKey;
       _descriptionController.text = widget.account!.description;
       customFields = List.from(widget.account!.customFields);
+      
+      // Enable auth key toggle if there's an existing auth key
+      _useAuthKey = widget.account!.authenticationKey.isNotEmpty;
       
       // Initialize controllers for existing custom fields
       for (var field in customFields) {
@@ -103,7 +108,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    _isEditing ? 'Edit Account' : 'Create New Account',
+                    _isEditing ? 'Edit Account' : 'Add New Account',
                     style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -114,7 +119,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
                   Text(
                     _isEditing 
                         ? 'Update your account details below'
-                        : 'Fill in all the details to create a new account',
+                        : 'Fill in all the details to add a new account',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.grey[600],
@@ -168,18 +173,42 @@ class _AddAccountPageState extends State<AddAccountPage> {
                   ),
                   const SizedBox(height: 24),
                   
-                  // Authentication Key Field
-                  _buildInputField(
-                    label: 'Authentication Key',
-                    controller: _authKeyController,
-                    icon: Icons.key,
-                    validator: (value) {
-                      if (value == null || value.trim().isEmpty) {
-                        return 'Please enter authentication key';
-                      }
-                      return null;
-                    },
+                  // Authentication Key Toggle
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Authentication Key',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      Switch(
+                        value: _useAuthKey,
+                        onChanged: (value) {
+                          setState(() {
+                            _useAuthKey = value;
+                            if (!value) {
+                              _authKeyController.clear(); // Clear auth key when disabled
+                            }
+                          });
+                        },
+                        activeColor: const Color(0xFF3E2411),
+                      ),
+                    ],
                   ),
+                  
+                  // Authentication Key Field (shown only when toggle is on)
+                  if (_useAuthKey) ...[
+                    const SizedBox(height: 16),
+                    AnimatedOpacity(
+                      opacity: _useAuthKey ? 1.0 : 0.3,
+                      duration: const Duration(milliseconds: 300),
+                      child: _buildAuthKeyField(),
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   
                   // Description Field
@@ -388,6 +417,70 @@ class _AddAccountPageState extends State<AddAccountPage> {
     );
   }
 
+  Widget _buildAuthKeyField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Don't show the label since it's already shown in the toggle above
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: _authKeyController,
+          obscureText: !_authKeyVisible,
+          validator: _useAuthKey ? (value) {
+            if (value == null || value.trim().isEmpty) {
+              return 'Please enter authentication key';
+            }
+            return null;
+          } : null,
+          style: const TextStyle(color: Colors.black),
+          decoration: InputDecoration(
+            prefixIcon: const Icon(Icons.key, color: Color(0xFF3E2411)),
+            suffixIcon: IconButton(
+              icon: Icon(
+                _authKeyVisible ? Icons.visibility : Icons.visibility_off,
+                color: const Color(0xFF3E2411),
+              ),
+              onPressed: () {
+                setState(() {
+                  _authKeyVisible = !_authKeyVisible;
+                });
+              },
+            ),
+            filled: true,
+            fillColor: const Color(0xFFF5F5F5),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: Color(0xFF3E2411),
+                width: 2,
+              ),
+            ),
+            errorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: const BorderSide(
+                color: Colors.red,
+                width: 2,
+              ),
+            ),
+            hintText: 'Enter Authentication Key',
+            hintStyle: TextStyle(color: Colors.grey[500]),
+          ),
+        ),
+      ],
+    );
+  }
+
   void _saveAccount() {
     if (_formKey.currentState!.validate()) {
       // Update custom field values from controllers
@@ -417,7 +510,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
         username: _usernameController.text.trim(),
         password: _passwordController.text.trim(),
         url: _urlController.text.trim(),
-        authenticationKey: _authKeyController.text.trim(),
+        authenticationKey: _useAuthKey ? _authKeyController.text.trim() : '',
         description: _descriptionController.text.trim(),
         customFields: updatedCustomFields,
         createdAt: _isEditing ? widget.account!.createdAt : null,

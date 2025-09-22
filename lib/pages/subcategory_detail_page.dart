@@ -283,6 +283,12 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
+                            subtitle: Text(
+                              account.username,
+                              style: TextStyle(
+                                color: Colors.grey[600],
+                              ),
+                            ),
                             trailing: const Icon(
                               Icons.arrow_forward_ios,
                               color: Color(0xFF3E2411),
@@ -429,6 +435,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
       print('🔸 Account detail result: $result');
       print('🔸 Result type: ${result.runtimeType}');
       print('🔸 Result == true: ${result == true}');
+      
       if (result == true) {
         // Account was deleted, force immediate local state update
         print('🔸 Account was deleted, removing from local state immediately...');
@@ -443,6 +450,18 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
         // Also refresh from Firebase in the background
         print('🔸 Starting background Firebase refresh...');
         _loadSubcategory();
+      } else if (result != null && result is Account) {
+        // Account was updated, replace it in the local state
+        print('🔸 Account was updated, updating local state...');
+        setState(() {
+          final accountIndex = currentSubcategory.accounts.indexWhere((acc) => acc.id == result.id);
+          if (accountIndex != -1) {
+            final updatedAccounts = [...currentSubcategory.accounts];
+            updatedAccounts[accountIndex] = result;
+            currentSubcategory = currentSubcategory.copyWith(accounts: updatedAccounts);
+            print('🔸 Local state updated with new account data');
+          }
+        });
       } else {
         print('🔸 No refresh needed, result was: $result');
       }
