@@ -392,35 +392,10 @@ class _HomePageState extends State<HomePage> {
       ),
     );
 
-    if (result == 'deleted') {
-      // Master branch was deleted, refresh the data
-      if (mounted) {
-        _loadMasterBranches();
-      }
-    } else if (result != null && result is MasterBranch) {
-      // If the master branch was updated, replace it in the list and save to Firebase
-      try {
-        // Save to Firebase first
-        await _firebaseService.updateMasterBranch(result);
-        
-        // Update local state
-        setState(() {
-          final index = masterBranches.indexWhere((mb) => mb.id == result.id);
-          if (index != -1) {
-            masterBranches[index] = result;
-          }
-        });
-      } catch (e) {
-        // Show error message
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error updating master branch: $e'),
-              backgroundColor: Colors.red[600],
-            ),
-          );
-        }
-      }
+    // Always refresh when returning from master branch detail page
+    // This ensures we see any changes made to master branches or their content
+    if (mounted) {
+      _loadMasterBranches();
     }
   }
 

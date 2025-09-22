@@ -28,6 +28,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
   late Subcategory currentSubcategory;
   final FirebaseService _firebaseService = FirebaseService();
   Map<String, bool> hiddenFieldVisibility = {}; // Track visibility of hidden fields
+  bool _hasChanges = false; // Track if any changes occurred
 
   @override
   void initState() {
@@ -51,10 +52,10 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context, currentSubcategory),
+          onPressed: () => Navigator.pop(context, _hasChanges ? currentSubcategory : null),
         ),
-      ),
-      body: SafeArea(
+        ),
+        body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -344,6 +345,7 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
           currentSubcategory = currentSubcategory.copyWith(
             accounts: [...currentSubcategory.accounts, result],
           );
+          _hasChanges = true; // Mark that changes occurred
         });
         
         // Show success message
@@ -430,41 +432,11 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
           masterBranch: masterBranch!,
         ),
       ),
-    ).then((result) {
-      print('🔸 Account detail navigation completed');
-      print('🔸 Account detail result: $result');
-      print('🔸 Result type: ${result.runtimeType}');
-      print('🔸 Result == true: ${result == true}');
-      
-      if (result == true) {
-        // Account was deleted, force immediate local state update
-        print('🔸 Account was deleted, removing from local state immediately...');
-        setState(() {
-          final updatedAccounts = currentSubcategory.accounts
-              .where((acc) => acc.id != account.id)
-              .toList();
-          currentSubcategory = currentSubcategory.copyWith(accounts: updatedAccounts);
-          print('🔸 Local state updated - now has ${currentSubcategory.accounts.length} accounts');
-        });
-        
-        // Also refresh from Firebase in the background
-        print('🔸 Starting background Firebase refresh...');
-        _loadSubcategory();
-      } else if (result != null && result is Account) {
-        // Account was updated, replace it in the local state
-        print('🔸 Account was updated, updating local state...');
-        setState(() {
-          final accountIndex = currentSubcategory.accounts.indexWhere((acc) => acc.id == result.id);
-          if (accountIndex != -1) {
-            final updatedAccounts = [...currentSubcategory.accounts];
-            updatedAccounts[accountIndex] = result;
-            currentSubcategory = currentSubcategory.copyWith(accounts: updatedAccounts);
-            print('🔸 Local state updated with new account data');
-          }
-        });
-      } else {
-        print('🔸 No refresh needed, result was: $result');
-      }
+    ).then((result) async {
+      // Always refresh when returning from account detail page
+      // This ensures we see any changes made to accounts
+      await _loadSubcategory();
+      _hasChanges = true; // Mark that changes may have occurred
     });
   }
 
@@ -705,7 +677,11 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
         // Update local state
         setState(() {
           currentSubcategory = updatedSubcategory;
+          _hasChanges = true; // Mark that changes occurred
         });
+        
+        // Also update the parent page by refreshing from Firebase
+        await _loadSubcategory();
         
         // Show success message
         if (mounted) {

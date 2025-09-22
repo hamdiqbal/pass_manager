@@ -19,7 +19,7 @@ class MasterBranchDetailPage extends StatefulWidget {
   State<MasterBranchDetailPage> createState() => _MasterBranchDetailPageState();
 }
 
-class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
+class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> with WidgetsBindingObserver {
   late MasterBranch currentMasterBranch;
   final FirebaseService _firebaseService = FirebaseService();
   Map<String, bool> hiddenFieldVisibility = {}; // Track visibility of hidden fields
@@ -28,6 +28,34 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
   void initState() {
     super.initState();
     currentMasterBranch = widget.masterBranch;
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Refresh when app comes back to foreground
+      _refreshMasterBranch();
+    }
+  }
+
+  Future<void> _refreshMasterBranch() async {
+    try {
+      final updatedMasterBranch = await _firebaseService.getMasterBranchById(currentMasterBranch.id);
+      if (updatedMasterBranch != null && mounted) {
+        setState(() {
+          currentMasterBranch = updatedMasterBranch;
+        });
+      }
+    } catch (e) {
+      print('Error refreshing master branch: $e');
+    }
   }
 
   @override
@@ -48,8 +76,8 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context, currentMasterBranch),
         ),
-      ),
-      body: SafeArea(
+        ),
+        body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(24.0),
@@ -346,35 +374,9 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
       ),
     );
 
-    // If the subcategory was updated, replace it in the list and save to Firebase
-    if (result != null && result is Subcategory) {
-      try {
-        // Save to Firebase
-        await _firebaseService.updateSubcategoryInMasterBranch(currentMasterBranch.id, result);
-        
-        // Update local state
-        setState(() {
-          final subcategoryIndex = currentMasterBranch.subcategories.indexWhere((s) => s.id == result.id);
-          if (subcategoryIndex != -1) {
-            final updatedSubcategories = [...currentMasterBranch.subcategories];
-            updatedSubcategories[subcategoryIndex] = result;
-            currentMasterBranch = currentMasterBranch.copyWith(
-              subcategories: updatedSubcategories,
-            );
-          }
-        });
-      } catch (e) {
-        // Show error message
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Error updating subcategory: $e'),
-              backgroundColor: Colors.red[600],
-            ),
-          );
-        }
-      }
-    }
+    // Always refresh when returning from subcategory detail page
+    // This ensures we see any changes made to subcategories or accounts
+    await _refreshMasterBranch();
   }
 
   Future<bool> _showDeleteConfirmation(BuildContext context, String title, String content) async {
