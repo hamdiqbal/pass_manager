@@ -229,18 +229,17 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
-                // Accounts List
-                if (currentSubcategory.accounts.isNotEmpty) ...[
-                  const Text(
-                    'Accounts',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                // Accounts Heading (always shown)
+                const Text(
+                  'Accounts',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                  const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 16),
+                if (currentSubcategory.accounts.isNotEmpty)
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -294,48 +293,20 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                         ),
                       );
                     },
-                  ),
-                ] else ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.grey[300]!,
-                        width: 1,
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: Text(
+                        'No accounts present',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[500],
+                        ),
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.account_circle_outlined,
-                          color: Colors.grey[600],
-                          size: 48,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No Accounts Yet',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[300],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Add your first account to get started',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[500],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
                   ),
-                ],
               ],
             ),
           ),
