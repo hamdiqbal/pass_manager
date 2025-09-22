@@ -202,18 +202,17 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                   ),
                 ),
                 const SizedBox(height: 32),
-                
-                // Subcategories List
-                if (currentMasterBranch.subcategories.isNotEmpty) ...[
-                  const Text(
-                    'Subcategories',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
+                // Subcategories Heading (always shown)
+                const Text(
+                  'Subcategories',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
                   ),
-                  const SizedBox(height: 16),
+                ),
+                const SizedBox(height: 16),
+                if (currentMasterBranch.subcategories.isNotEmpty)
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -269,48 +268,20 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> {
                         ),
                       );
                     },
-                  ),
-                ] else ...[
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(24),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFF5F5F5),
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(
-                        color: Colors.grey[300]!,
-                        width: 1,
+                  )
+                else
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 16.0),
+                    child: Center(
+                      child: Text(
+                        'No subcategories present',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey[500],
+                        ),
                       ),
                     ),
-                    child: Column(
-                      children: [
-                        Icon(
-                          Icons.category_outlined,
-                          color: Colors.grey[600],
-                          size: 48,
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          'No Subcategories Yet',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey[300],
-                          ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          'Add your first subcategory to get started',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey[500],
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
                   ),
-                ],
               ],
             ),
           ),
