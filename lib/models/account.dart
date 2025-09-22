@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'custom_field.dart';
 
 class Account {
@@ -23,6 +24,25 @@ class Account {
     DateTime? createdAt,
   }) : customFields = customFields ?? [],
         createdAt = createdAt ?? DateTime.now();
+
+  // Factory constructor for Firestore
+  factory Account.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Account(
+      id: doc.id,
+      name: data['name'] ?? '',
+      username: data['username'] ?? '',
+      password: data['password'] ?? '',
+      url: data['url'] ?? '',
+      authenticationKey: data['authKey'] ?? '',
+      description: data['notes'] ?? '',
+      customFields: [], // TODO: Add custom fields parsing if needed
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
+  // Getter for authKey compatibility
+  String? get authKey => authenticationKey.isEmpty ? null : authenticationKey;
 
   // Legacy getter for compatibility with existing code
   String get additionalSpace {

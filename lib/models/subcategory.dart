@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'account.dart';
 import 'custom_field.dart';
 
@@ -19,6 +20,19 @@ class Subcategory {
   }) : customFields = customFields ?? [],
         accounts = accounts ?? [],
         createdAt = createdAt ?? DateTime.now();
+
+  // Factory constructor for Firestore
+  factory Subcategory.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return Subcategory(
+      id: doc.id,
+      name: data['name'] ?? '',
+      description: data['description'] ?? '',
+      customFields: [], // TODO: Add custom fields parsing if needed
+      accounts: [], // Accounts are loaded separately
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
 
   // Legacy getter for compatibility with existing code
   String get additionalField {

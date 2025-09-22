@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
-import 'package:permission_handler/permission_handler.dart';
+import '../core/constants/app_constants.dart';
+import '../core/controllers/qr_scanner_controller.dart';
+import '../core/utils/ui_utils.dart';
 
 class QRScannerPage extends StatefulWidget {
   const QRScannerPage({super.key});
@@ -10,314 +12,212 @@ class QRScannerPage extends StatefulWidget {
 }
 
 class _QRScannerPageState extends State<QRScannerPage> {
-  late MobileScannerController controller;
-  String? scannedData;
-  bool hasPermission = false;
-  bool isProcessing = false;
+  late QRScannerController _controller;
+  bool _isProcessing = false;
 
   @override
   void initState() {
     super.initState();
-    controller = MobileScannerController();
-    _checkPermission();
+    _controller = QRScannerController();
+    _initializeScanner();
   }
 
-  Future<void> _checkPermission() async {
-    final status = await Permission.camera.status;
-    if (status.isGranted) {
-      setState(() {
-        hasPermission = true;
-      });
+  Future<void> _initializeScanner() async {
+    final success = await _controller.initializeScanner();
+    if (success) {
+      _controller.startScanning();
     } else {
-      final result = await Permission.camera.request();
-      setState(() {
-        hasPermission = result.isGranted;
-      });
+      if (mounted) {
+        UIUtils.showErrorSnackBar(
+          context,
+          _controller.error ?? AppConstants.errorGeneric,
+        );
+      }
     }
   }
 
   void _onDetect(BarcodeCapture capture) {
-    if (isProcessing) return;
+    if (_isProcessing) return;
     
-    final List<Barcode> barcodes = capture.barcodes;
-    if (barcodes.isNotEmpty && scannedData == null) {
-      setState(() {
-        isProcessing = true;
-        scannedData = barcodes.first.rawValue;
-      });
-      _extractAuthKey(barcodes.first.rawValue ?? '');
-    }
-  }
+    setState(() {
+      _isProcessing = true;
+    });
 
-  void _extractAuthKey(String qrData) {
-    String authKey = '';
-    
-    try {
-      // Common QR code formats for 2FA/TOTP:
-      // 1. otpauth://totp/Example:user@example.com?secret=JBSWY3DPEHPK3PXP&issuer=Example
-      // 2. Plain secret key
-      
-      if (qrData.startsWith('otpauth://')) {
-        // Parse otpauth URL
-        final uri = Uri.parse(qrData);
-        authKey = uri.queryParameters['secret'] ?? '';
-      } else {
-        // Assume it's a plain secret key
-        authKey = qrData.replaceAll(RegExp(r'[^A-Z2-7]'), ''); // Clean base32 characters
-      }
-      
-      if (authKey.isNotEmpty) {
-        // Return the extracted key
-        Navigator.pop(context, authKey);
-      } else {
-        _showErrorDialog('Invalid QR Code', 'Could not extract authentication key from the QR code.');
-      }
-    } catch (e) {
-      _showErrorDialog('Error', 'Failed to process QR code: $e');
-    }
-  }
-
-  void _showErrorDialog(String title, String message) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: const Color(0xFFF5F5F5),
-          title: Text(
-            title,
-            style: const TextStyle(color: Colors.black),
-          ),
-          content: Text(
-            message,
-            style: const TextStyle(color: Colors.black),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context); // Go back to previous page
-              },
-              child: const Text(
-                'OK',
-                style: TextStyle(color: Color(0xFF3E2411)),
-              ),
-            ),
-          ],
-        );
+    _controller.handleScanResult(
+      context,
+      capture,
+      onSuccess: (authKey) {
+        if (mounted) {
+          Navigator.pop(context, authKey);
+        }
+      },
+      onError: (error) {
+        setState(() {
+          _isProcessing = false;
+        });
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!hasPermission) {
-      return Scaffold(
-        backgroundColor: const Color(0xFFF5F5F5),
-        appBar: AppBar(
-          backgroundColor: const Color(0xFF3E2411),
-          title: const Text(
-            'QR Code Scanner',
-            style: TextStyle(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () => Navigator.pop(context),
-          ),
-        ),
-        body: const Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.camera_alt_outlined,
-                size: 80,
-                color: Colors.grey,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Camera Permission Required',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              SizedBox(height: 8),
-              Text(
-                'Please grant camera permission to scan QR codes',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: Colors.grey,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppConstants.backgroundColor,
       appBar: AppBar(
-        backgroundColor: const Color(0xFF3E2411),
-        title: const Text(
-          'Scan QR Code',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+        backgroundColor: AppConstants.primaryColor,
+        title: Text(
+          AppConstants.scanQRCode,
+          style: AppConstants.appBarTitleStyle,
         ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
         ),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 4,
-            child: Stack(
-              children: [
-                MobileScanner(
-                  controller: controller,
-                  onDetect: _onDetect,
-                ),
-                // Custom overlay for scanning frame
-                Center(
-                  child: Container(
-                    width: 250,
-                    height: 250,
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: const Color(0xFF3E2411),
-                        width: 3,
-                      ),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const SizedBox.shrink(),
-                  ),
-                ),
-                // Corner decorations for scanning frame
-                Center(
-                  child: SizedBox(
-                    width: 250,
-                    height: 250,
-                    child: Stack(
-                      children: [
-                        // Top-left corner
-                        Positioned(
-                          top: -3,
-                          left: -3,
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                top: BorderSide(color: Color(0xFF3E2411), width: 6),
-                                left: BorderSide(color: Color(0xFF3E2411), width: 6),
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Top-right corner
-                        Positioned(
-                          top: -3,
-                          right: -3,
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                top: BorderSide(color: Color(0xFF3E2411), width: 6),
-                                right: BorderSide(color: Color(0xFF3E2411), width: 6),
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Bottom-left corner
-                        Positioned(
-                          bottom: -3,
-                          left: -3,
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(color: Color(0xFF3E2411), width: 6),
-                                left: BorderSide(color: Color(0xFF3E2411), width: 6),
-                              ),
-                            ),
-                          ),
-                        ),
-                        // Bottom-right corner
-                        Positioned(
-                          bottom: -3,
-                          right: -3,
-                          child: Container(
-                            width: 30,
-                            height: 30,
-                            decoration: const BoxDecoration(
-                              border: Border(
-                                bottom: BorderSide(color: Color(0xFF3E2411), width: 6),
-                                right: BorderSide(color: Color(0xFF3E2411), width: 6),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
+        actions: [
+          if (_controller.isReady) ...[
+            IconButton(
+              icon: Icon(
+                _controller.flashOn ? Icons.flash_off : Icons.flash_on,
+                color: Colors.white,
+              ),
+              onPressed: _controller.toggleFlash,
             ),
-          ),
-          Expanded(
-            flex: 1,
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(
-                    Icons.qr_code_scanner,
-                    size: 36,
-                    color: Color(0xFF3E2411),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text(
-                    'Position the QR code within the frame',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    isProcessing ? 'Processing...' : 'Scanning for authentication key...',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey[600],
-                    ),
-                  ),
-                ],
+            IconButton(
+              icon: const Icon(Icons.flip_camera_ios, color: Colors.white),
+              onPressed: _controller.switchCamera,
+            ),
+          ],
+        ],
+      ),
+      body: ListenableBuilder(
+        listenable: _controller,
+        builder: (context, child) {
+          if (!_controller.hasPermission) {
+            return _buildPermissionView();
+          }
+
+          if (!_controller.isReady) {
+            return _buildLoadingView();
+          }
+
+          return _buildScannerView();
+        },
+      ),
+    );
+  }
+
+  Widget _buildPermissionView() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(AppConstants.paddingLarge),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(
+              Icons.camera_alt_outlined,
+              size: 80,
+              color: Colors.grey,
+            ),
+            const SizedBox(height: AppConstants.paddingMedium),
+            Text(
+              AppConstants.cameraPermissionRequired,
+              style: AppConstants.subheadingStyle,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppConstants.paddingSmall),
+            Text(
+              AppConstants.grantCameraPermissionMessage,
+              style: AppConstants.bodyStyle.copyWith(color: Colors.grey),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: AppConstants.paddingLarge),
+            ElevatedButton(
+              onPressed: _initializeScanner,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppConstants.primaryColor,
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppConstants.paddingLarge,
+                  vertical: AppConstants.paddingMedium,
+                ),
+              ),
+              child: Text(
+                'Grant Permission',
+                style: AppConstants.buttonTextStyle,
               ),
             ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoadingView() {
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          CircularProgressIndicator(
+            valueColor: AlwaysStoppedAnimation<Color>(AppConstants.primaryColor),
+          ),
+          SizedBox(height: AppConstants.paddingMedium),
+          Text(
+            'Initializing camera...',
+            style: AppConstants.bodyStyle,
           ),
         ],
       ),
     );
   }
 
+  Widget _buildScannerView() {
+    return Column(
+      children: [
+        Expanded(
+          flex: 4,
+          child: _controller.buildScannerWidget(
+            onDetect: _onDetect,
+            overlay: _controller.buildScannerOverlay(),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Container(
+            padding: const EdgeInsets.all(AppConstants.paddingLarge),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.qr_code_scanner,
+                  size: 36,
+                  color: AppConstants.primaryColor,
+                ),
+                const SizedBox(height: AppConstants.paddingSmall),
+                Text(
+                  AppConstants.positionQRCode,
+                  textAlign: TextAlign.center,
+                  style: AppConstants.bodyStyle.copyWith(
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: AppConstants.paddingSmall),
+                Text(
+                  _isProcessing 
+                      ? AppConstants.processing 
+                      : AppConstants.scanningForAuthKey,
+                  textAlign: TextAlign.center,
+                  style: AppConstants.captionStyle,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   @override
   void dispose() {
-    controller.dispose();
+    _controller.dispose();
     super.dispose();
   }
 }
