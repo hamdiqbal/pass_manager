@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/account.dart';
 import '../models/custom_field.dart';
+import 'qr_scanner_page.dart';
 
 class AddAccountPage extends StatefulWidget {
   final Account? account; // For editing existing account
@@ -477,8 +478,77 @@ class _AddAccountPageState extends State<AddAccountPage> {
             hintStyle: TextStyle(color: Colors.grey[500]),
           ),
         ),
+        const SizedBox(height: 12),
+        // QR Code Scan Button
+        SizedBox(
+          width: double.infinity,
+          child: OutlinedButton.icon(
+            onPressed: _scanQRCode,
+            icon: const Icon(
+              Icons.qr_code_scanner,
+              color: Color(0xFF3E2411),
+            ),
+            label: const Text(
+              'Scan QR Code',
+              style: TextStyle(
+                color: Color(0xFF3E2411),
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            style: OutlinedButton.styleFrom(
+              side: const BorderSide(
+                color: Color(0xFF3E2411),
+                width: 1.5,
+              ),
+              backgroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 20),
+            ),
+          ),
+        ),
       ],
     );
+  }
+
+  Future<void> _scanQRCode() async {
+    try {
+      final result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const QRScannerPage(),
+        ),
+      );
+
+      if (result != null && result is String && result.isNotEmpty) {
+        setState(() {
+          _authKeyController.text = result;
+        });
+        
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Authentication key scanned successfully!'),
+              backgroundColor: Color(0xFF3E2411),
+              duration: Duration(seconds: 2),
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      // Show error message
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error scanning QR code: $e'),
+            backgroundColor: Colors.red[600],
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
   }
 
   void _saveAccount() {

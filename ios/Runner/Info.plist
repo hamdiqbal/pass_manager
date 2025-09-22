@@ -48,5 +48,8 @@
 	<!-- Biometric authentication usage description -->
 	<key>NSFaceIDUsageDescription</key>
 	<string>Use Face ID to authenticate and access your secure password vault</string>
+	<!-- Camera permission for QR code scanning -->
+	<key>NSCameraUsageDescription</key>
+	<string>Camera access is required to scan QR codes for authentication keys</string>
 </dict>
 </plist>
