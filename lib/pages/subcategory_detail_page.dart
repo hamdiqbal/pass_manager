@@ -212,49 +212,14 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                   height: 32,
                 ),
                 
-                // Accounts Heading with Add Button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Accounts',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: _navigateToAddAccount,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3E2411),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'Add Account',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                // Accounts Heading
+                const Text(
+                  'Accounts',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 if (currentSubcategory.accounts.isNotEmpty)
@@ -329,6 +294,12 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToAddAccount,
+        backgroundColor: const Color(0xFF3E2411),
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
       ),
     );
   }

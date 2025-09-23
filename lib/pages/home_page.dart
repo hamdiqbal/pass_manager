@@ -234,42 +234,6 @@ class _HomePageState extends State<HomePage> {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 48),
-                
-                // Master Branch Button
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _navigateToMasterBranchPage,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3E2411),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.add,
-                          color: Colors.white,
-                          size: 20,
-                        ),
-                        SizedBox(width: 8),
-                        Text(
-                          'Add Master Branch',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
                 const SizedBox(height: 32),
                 
                 // Master Branches List
@@ -339,6 +303,12 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToMasterBranchPage,
+        backgroundColor: const Color(0xFF3E2411),
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
       ),
     );
   }

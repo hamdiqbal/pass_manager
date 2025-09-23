@@ -85,7 +85,8 @@ class BiometricService {
         localizedReason: authMethodDescription.isNotEmpty ? authMethodDescription : authReason,
         options: const AuthenticationOptions(
           biometricOnly: false, // Allow fallback to PIN/pattern/password
-          stickyAuth: true,
+          stickyAuth: true,     // Keep the authentication dialog persistent
+          useErrorDialogs: false, // Don't show system error dialogs
         ),
       );
 

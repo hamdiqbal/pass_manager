@@ -87,18 +87,31 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
         print('Device authentication successful');
         _proceedToHome();
       } else {
-        print('Device authentication failed');
-        _showBiometricError();
-      }
-    } catch (e) {
-      print('Exception during device authentication: $e');
-      _showBiometricError();
-    } finally {
-      if (mounted) {
+        print('Device authentication failed or cancelled - retrying...');
+        // Don't show error, immediately retry authentication
         setState(() {
           _isLoading = false;
         });
+        // Small delay to prevent immediate retry
+        await Future.delayed(const Duration(milliseconds: 500));
+        _authenticateWithBiometric();
+        return;
       }
+    } catch (e) {
+      print('Exception during device authentication: $e');
+      // Don't show error, immediately retry authentication
+      setState(() {
+        _isLoading = false;
+      });
+      await Future.delayed(const Duration(milliseconds: 500));
+      _authenticateWithBiometric();
+      return;
+    }
+    
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -119,18 +132,30 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
         await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
         _proceedToHome();
       } else {
-        print('Device authentication failed during enable');
-        _showBiometricError();
-      }
-    } catch (e) {
-      print('Exception during device authentication enable: $e');
-      _showBiometricError();
-    } finally {
-      if (mounted) {
+        print('Device authentication failed or cancelled during enable - retrying...');
+        // Don't show error, immediately retry authentication
         setState(() {
           _isLoading = false;
         });
+        await Future.delayed(const Duration(milliseconds: 500));
+        _enableBiometricAndAuthenticate();
+        return;
       }
+    } catch (e) {
+      print('Exception during device authentication enable: $e');
+      // Don't show error, immediately retry authentication
+      setState(() {
+        _isLoading = false;
+      });
+      await Future.delayed(const Duration(milliseconds: 500));
+      _enableBiometricAndAuthenticate();
+      return;
+    }
+    
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
@@ -210,9 +235,11 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
+    return PopScope(
+      canPop: false, // Prevent back navigation
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(24.0),
           child: ConstrainedBox(
@@ -370,6 +397,7 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
         ), // Close ConstrainedBox
       ), // Close SingleChildScrollView  
     ), // Close SafeArea
-    ); // Close Scaffold
+    ), // Close Scaffold
+    ); // Close PopScope
   }
 }

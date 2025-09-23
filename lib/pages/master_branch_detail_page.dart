@@ -212,49 +212,14 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> with Wi
                   height: 32,
                 ),
                 
-                // Subcategories Heading with Add Button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text(
-                      'Subcategories',
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    ElevatedButton(
-                      onPressed: _navigateToSubcategoryPage,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF3E2411),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        elevation: 0,
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.add,
-                            color: Colors.white,
-                            size: 16,
-                          ),
-                          SizedBox(width: 6),
-                          Text(
-                            'Add Subcategory',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                // Subcategories Heading
+                const Text(
+                  'Subcategories',
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 if (currentMasterBranch.subcategories.isNotEmpty)
@@ -325,6 +290,12 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> with Wi
             ),
           ),
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _navigateToSubcategoryPage,
+        backgroundColor: const Color(0xFF3E2411),
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.add),
       ),
     );
   }
