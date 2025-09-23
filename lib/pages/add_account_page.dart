@@ -30,6 +30,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
   
   List<CustomField> customFields = [];
   Map<String, TextEditingController> fieldControllers = {};
+  Map<String, FocusNode> fieldFocusNodes = {};
   Map<String, bool> hiddenFieldVisibility = {}; // Track visibility of hidden fields
 
   @override
@@ -54,6 +55,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
         fieldControllers[field.id] = TextEditingController(
           text: field.value?.toString() ?? '',
         );
+        fieldFocusNodes[field.id] = FocusNode();
         // Initialize hidden field visibility to false (hidden by default)
         if (field.type == 'hidden') {
           hiddenFieldVisibility[field.id] = false;
@@ -74,6 +76,11 @@ class _AddAccountPageState extends State<AddAccountPage> {
     // Dispose custom field controllers
     for (var controller in fieldControllers.values) {
       controller.dispose();
+    }
+    
+    // Dispose custom field focus nodes
+    for (var focusNode in fieldFocusNodes.values) {
+      focusNode.dispose();
     }
     
     super.dispose();
@@ -668,8 +675,16 @@ class _AddAccountPageState extends State<AddAccountPage> {
                   setState(() {
                     customFields.add(newField);
                     fieldControllers[newField.id] = TextEditingController();
+                    fieldFocusNodes[newField.id] = FocusNode();
                     if (newField.type == 'hidden') {
                       hiddenFieldVisibility[newField.id] = false;
+                    }
+                  });
+                  
+                  // Request focus on the newly added field after the widget is built
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (selectedType != 'boolean') { // Don't focus boolean fields
+                      fieldFocusNodes[newField.id]?.requestFocus();
                     }
                   });
                   
@@ -742,13 +757,13 @@ class _AddAccountPageState extends State<AddAccountPage> {
             ],
           ),
           const SizedBox(height: 12),
-          _buildFieldInput(field, controller),
+          _buildFieldInput(field, controller, fieldFocusNodes[field.id]!),
         ],
       ),
     );
   }
 
-  Widget _buildFieldInput(CustomField field, TextEditingController controller) {
+  Widget _buildFieldInput(CustomField field, TextEditingController controller, FocusNode focusNode) {
     switch (field.type) {
       case 'boolean':
         return DropdownButtonFormField<String>(
@@ -779,6 +794,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
             Expanded(
               child: TextFormField(
                 controller: controller,
+                focusNode: focusNode,
                 obscureText: !(hiddenFieldVisibility[field.id] ?? false),
                 style: const TextStyle(color: Colors.black),
                 decoration: InputDecoration(
@@ -811,6 +827,7 @@ class _AddAccountPageState extends State<AddAccountPage> {
       default: // text, linked
         return TextFormField(
           controller: controller,
+          focusNode: focusNode,
           style: const TextStyle(color: Colors.black),
           decoration: InputDecoration(
             filled: true,

@@ -25,6 +25,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
   bool get isEditing => widget.subcategory != null;
   List<CustomField> customFields = [];
   Map<String, TextEditingController> fieldControllers = {};
+  Map<String, FocusNode> fieldFocusNodes = {};
   Map<String, bool> hiddenFieldVisibility = {}; // Track visibility of hidden fields
 
   @override
@@ -40,6 +41,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
         fieldControllers[field.id] = TextEditingController(
           text: field.value?.toString() ?? '',
         );
+        fieldFocusNodes[field.id] = FocusNode();
         // Initialize hidden field visibility to false (hidden by default)
         if (field.type == 'hidden') {
           hiddenFieldVisibility[field.id] = false;
@@ -54,6 +56,9 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
     _descriptionController.dispose();
     for (var controller in fieldControllers.values) {
       controller.dispose();
+    }
+    for (var focusNode in fieldFocusNodes.values) {
+      focusNode.dispose();
     }
     super.dispose();
   }
@@ -387,13 +392,13 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
             ],
           ),
           const SizedBox(height: 12),
-          _buildFieldInput(field, controller),
+          _buildFieldInput(field, controller, fieldFocusNodes[field.id]!),
         ],
       ),
     );
   }
 
-  Widget _buildFieldInput(CustomField field, TextEditingController controller) {
+  Widget _buildFieldInput(CustomField field, TextEditingController controller, FocusNode focusNode) {
     switch (field.type) {
       case 'boolean':
         return Row(
@@ -418,6 +423,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       case 'hidden':
         return TextFormField(
           controller: controller,
+          focusNode: focusNode,
           obscureText: !(hiddenFieldVisibility[field.id] ?? false),
           style: const TextStyle(color: Colors.black),
           decoration: _getFieldDecoration('Enter ${field.name}').copyWith(
@@ -441,6 +447,7 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       default:
         return TextFormField(
           controller: controller,
+          focusNode: focusNode,
           style: const TextStyle(color: Colors.black),
           decoration: _getFieldDecoration('Enter ${field.name}'),
         );
@@ -588,9 +595,17 @@ class _SubcategoryPageState extends State<SubcategoryPage> {
       fieldControllers[field.id] = TextEditingController(
         text: field.value?.toString() ?? '',
       );
+      fieldFocusNodes[field.id] = FocusNode();
       // Initialize hidden field visibility to false (hidden by default)
       if (type == 'hidden') {
         hiddenFieldVisibility[field.id] = false;
+      }
+    });
+    
+    // Request focus on the newly added field after the widget is built
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (type != 'boolean') { // Don't focus boolean fields (they use Radio buttons)
+        fieldFocusNodes[field.id]?.requestFocus();
       }
     });
   }
