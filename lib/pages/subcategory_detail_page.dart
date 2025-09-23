@@ -154,22 +154,6 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                             ],
                           ),
                         ),
-                        // Edit button
-                        Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF3E2411),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.white, size: 20),
-                            onPressed: _editSubcategory,
-                            padding: const EdgeInsets.all(8),
-                            constraints: const BoxConstraints(
-                              minWidth: 36,
-                              minHeight: 36,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -657,65 +641,6 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
     }
   }
 
-  void _editSubcategory() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SubcategoryPage(
-          masterBranch: widget.masterBranch ?? MasterBranch(
-            id: widget.masterBranchId,
-            name: '',
-            additionalField: '',
-            description: '',
-          ),
-          subcategory: currentSubcategory,
-        ),
-      ),
-    );
-
-    if (result != null && result is Subcategory) {
-      try {
-        // Preserve existing accounts when updating
-        final updatedSubcategory = result.copyWith(accounts: currentSubcategory.accounts);
-        
-        // Save to Firebase by updating the subcategory in the master branch
-        await _firebaseService.updateSubcategoryInMasterBranch(
-          widget.masterBranchId, 
-          updatedSubcategory
-        );
-        
-        // Update local state
-        setState(() {
-          currentSubcategory = updatedSubcategory;
-          _hasChanges = true; // Mark that changes occurred
-        });
-        
-        // Also update the parent page by refreshing from Firebase
-        await _loadSubcategory();
-        
-        // Show success message
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Subcategory updated successfully!'),
-              backgroundColor: Color(0xFF3E2411),
-            ),
-          );
-        }
-      } catch (e) {
-        // Show error message
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to update subcategory: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    }
-  }
-
   Future<void> _deleteSubcategory() async {
     // First confirmation popup
     final firstConfirmed = await _showDeleteConfirmation(
@@ -770,6 +695,58 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
     }
   }
 
+  Future<void> _editAccount(Account account) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AddAccountPage(
+          account: account,
+        ),
+      ),
+    );
+
+    if (result != null && result is Account) {
+      try {
+        // Update in Firebase
+        await _firebaseService.updateAccountInSubcategory(
+          widget.masterBranchId,
+          currentSubcategory.id,
+          result,
+        );
+        
+        // Update local state
+        setState(() {
+          final index = currentSubcategory.accounts.indexWhere((a) => a.id == account.id);
+          if (index != -1) {
+            currentSubcategory = currentSubcategory.copyWith(
+              accounts: currentSubcategory.accounts.map((a) => a.id == account.id ? result : a).toList(),
+            );
+          }
+        });
+        
+        // Show success message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account updated successfully!'),
+              backgroundColor: Color(0xFF3E2411),
+            ),
+          );
+        }
+      } catch (e) {
+        // Show error message
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Failed to update account: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      }
+    }
+  }
+
   void _showAccountOptions(Account account) {
     showModalBottomSheet(
       context: context,
@@ -799,6 +776,15 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                 ),
               ),
               const SizedBox(height: 20),
+              ListTile(
+                leading: const Icon(Icons.edit, color: Color(0xFF3E2411)),
+                title: const Text('Edit Account', style: TextStyle(color: Color(0xFF3E2411))),
+                onTap: () {
+                  Navigator.pop(context);
+                  _editAccount(account);
+                },
+              ),
+              const SizedBox(height: 10),
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
                 title: const Text('Delete Account', style: TextStyle(color: Colors.red)),

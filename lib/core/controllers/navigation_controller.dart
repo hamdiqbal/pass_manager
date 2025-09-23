@@ -49,7 +49,7 @@ class NavigationController extends ChangeNotifier {
           .orderBy('name')
           .get();
 
-      _masterBranches = querySnapshot.docs.map((doc) {
+      _masterBranches = querySnapshot.docs.map((DocumentSnapshot doc) {
         return MasterBranch.fromFirestore(doc);
       }).toList();
 

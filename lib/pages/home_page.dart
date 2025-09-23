@@ -444,6 +444,22 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _editMasterBranch(MasterBranch masterBranch) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MasterBranchPage(
+          masterBranch: masterBranch,
+        ),
+      ),
+    );
+
+    if (result == true) {
+      // Refresh the list if edit was successful
+      _loadMasterBranches();
+    }
+  }
+
   void _showMasterBranchOptions(MasterBranch masterBranch) {
     showModalBottomSheet(
       context: context,
@@ -473,6 +489,15 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
+              ListTile(
+                leading: const Icon(Icons.edit, color: Color(0xFF3E2411)),
+                title: const Text('Edit Master Branch', style: TextStyle(color: Color(0xFF3E2411))),
+                onTap: () {
+                  Navigator.pop(context);
+                  _editMasterBranch(masterBranch);
+                },
+              ),
+              const SizedBox(height: 10),
               ListTile(
                 leading: const Icon(Icons.delete, color: Colors.red),
                 title: const Text('Delete Master Branch', style: TextStyle(color: Colors.red)),

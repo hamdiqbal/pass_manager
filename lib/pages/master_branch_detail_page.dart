@@ -154,22 +154,6 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> with Wi
                             ],
                           ),
                         ),
-                        // Edit button
-                        Container(
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF3E2411),
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: IconButton(
-                            icon: const Icon(Icons.edit, color: Colors.white, size: 20),
-                            onPressed: _editMasterBranch,
-                            padding: const EdgeInsets.all(8),
-                            constraints: const BoxConstraints(
-                              minWidth: 36,
-                              minHeight: 36,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),
@@ -592,47 +576,6 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> with Wi
     }
   }
 
-  void _editMasterBranch() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => MasterBranchPage(masterBranch: currentMasterBranch),
-      ),
-    );
-
-    if (result != null && result is MasterBranch) {
-      try {
-        // Save to Firebase
-        await _firebaseService.updateMasterBranch(result);
-        
-        // Update local state
-        setState(() {
-          currentMasterBranch = result;
-        });
-        
-        // Show success message
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Master branch updated successfully!'),
-              backgroundColor: Color(0xFF3E2411),
-            ),
-          );
-        }
-      } catch (e) {
-        // Show error message
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Failed to update master branch: $e'),
-              backgroundColor: Colors.red,
-            ),
-          );
-        }
-      }
-    }
-  }
-
   void _showSubcategoryOptions(Subcategory subcategory) {
     showModalBottomSheet(
       context: context,
@@ -663,6 +606,15 @@ class _MasterBranchDetailPageState extends State<MasterBranchDetailPage> with Wi
               ),
             ),
             const SizedBox(height: 20),
+            ListTile(
+              leading: const Icon(Icons.edit, color: Color(0xFF3E2411)),
+              title: const Text('Edit Subcategory', style: TextStyle(color: Color(0xFF3E2411))),
+              onTap: () {
+                Navigator.pop(context);
+                _editSubcategory(subcategory);
+              },
+            ),
+            const SizedBox(height: 10),
             ListTile(
               leading: const Icon(Icons.delete, color: Colors.red),
               title: const Text('Delete Subcategory', style: TextStyle(color: Colors.red)),

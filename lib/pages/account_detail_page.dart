@@ -145,22 +145,6 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
                           ],
                         ),
                       ),
-                      // Edit button
-                      Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF3E2411),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(Icons.edit, color: Colors.white, size: 20),
-                          onPressed: () => _editAccount(),
-                          padding: const EdgeInsets.all(8),
-                          constraints: const BoxConstraints(
-                            minWidth: 36,
-                            minHeight: 36,
-                          ),
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -375,63 +359,6 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year} at ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
-  }
-
-  void _editAccount() {
-    // Navigate to edit account page
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => AddAccountPage(
-          account: currentAccount, // Pass account for editing
-        ),
-      ),
-    ).then((result) {
-      if (result != null) {
-        if (result is Account) {
-          // Account was updated, save it and go back to refresh parent
-          _updateAccount(result);
-        }
-        // Removed DELETE_ACCOUNT handling since delete button was removed
-      }
-    });
-  }
-
-  Future<void> _updateAccount(Account updatedAccount) async {
-    try {
-      // Update the account in Firebase
-      await _firebaseService.updateAccountInSubcategory(
-        widget.masterBranch.id,
-        widget.subcategory.id,
-        updatedAccount,
-      );
-      
-      // Update the local state
-      setState(() {
-        currentAccount = updatedAccount;
-      });
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Account updated successfully'),
-            backgroundColor: Colors.green,
-          ),
-        );
-        
-        // Return the updated account to the subcategory detail page
-        Navigator.pop(context, updatedAccount);
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error updating account: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
-    }
   }
 
   Future<void> _handleAccountDeletion() async {
