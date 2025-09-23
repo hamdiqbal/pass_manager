@@ -5,6 +5,7 @@ import '../models/subcategory.dart';
 import '../models/master_branch.dart';
 import '../models/custom_field.dart';
 import '../services/firebase_service.dart';
+import '../services/biometric_service.dart';
 import 'add_account_page.dart';
 
 class AccountDetailPage extends StatefulWidget {
@@ -25,6 +26,7 @@ class AccountDetailPage extends StatefulWidget {
 
 class _AccountDetailPageState extends State<AccountDetailPage> {
   final FirebaseService _firebaseService = FirebaseService();
+  final BiometricService _biometricService = BiometricService();
   bool _isPasswordVisible = false;
   bool _isAuthKeyVisible = false;
   late Account currentAccount;
@@ -40,6 +42,20 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
       if (field.type == 'hidden') {
         hiddenFieldVisibility[field.id] = false; // Hidden by default
       }
+    }
+  }
+
+  Future<bool> _authenticateForSensitiveData() async {
+    try {
+      final isAvailable = await _biometricService.isBiometricAvailable();
+      if (!isAvailable) {
+        return true; // If biometric not available, allow access
+      }
+      
+      return await _biometricService.authenticateWithBiometrics();
+    } catch (e) {
+      print('Authentication error: $e');
+      return false;
     }
   }
 
@@ -182,7 +198,20 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
               copyable: true,
               hasVisibilityToggle: true,
               isVisible: _isPasswordVisible,
-              onVisibilityToggle: () {
+              onVisibilityToggle: () async {
+                if (!_isPasswordVisible) {
+                  // Authenticate before showing password
+                  final authenticated = await _authenticateForSensitiveData();
+                  if (!authenticated) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Authentication required to view password'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+                }
                 setState(() {
                   _isPasswordVisible = !_isPasswordVisible;
                 });
@@ -602,7 +631,20 @@ class _AccountDetailPageState extends State<AccountDetailPage> {
                 isVisible ? Icons.visibility : Icons.visibility_off,
                 color: const Color(0xFF3E2411),
               ),
-              onPressed: () {
+              onPressed: () async {
+                if (!isVisible) {
+                  // Authenticate before showing hidden field
+                  final authenticated = await _authenticateForSensitiveData();
+                  if (!authenticated) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Authentication required to view hidden field'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+                }
                 setState(() {
                   hiddenFieldVisibility[field.id] = !isVisible;
                 });

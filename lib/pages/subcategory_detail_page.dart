@@ -4,6 +4,7 @@ import '../models/account.dart';
 import '../models/master_branch.dart';
 import '../models/custom_field.dart';
 import '../services/firebase_service.dart';
+import '../services/biometric_service.dart';
 import 'add_account_page.dart';
 import 'account_detail_page.dart';
 import 'subcategory_page.dart';
@@ -27,6 +28,7 @@ class SubcategoryDetailPage extends StatefulWidget {
 class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
   late Subcategory currentSubcategory;
   final FirebaseService _firebaseService = FirebaseService();
+  final BiometricService _biometricService = BiometricService();
   Map<String, bool> hiddenFieldVisibility = {}; // Track visibility of hidden fields
   bool _hasChanges = false; // Track if any changes occurred
 
@@ -34,6 +36,20 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
   void initState() {
     super.initState();
     currentSubcategory = widget.subcategory;
+  }
+
+  Future<bool> _authenticateForSensitiveData() async {
+    try {
+      final isAvailable = await _biometricService.isBiometricAvailable();
+      if (!isAvailable) {
+        return true; // If biometric not available, allow access
+      }
+      
+      return await _biometricService.authenticateWithBiometrics();
+    } catch (e) {
+      print('Authentication error: $e');
+      return false;
+    }
   }
 
   @override
@@ -592,7 +608,20 @@ class _SubcategoryDetailPageState extends State<SubcategoryDetailPage> {
                 isVisible ? Icons.visibility : Icons.visibility_off,
                 color: Colors.grey[400],
               ),
-              onPressed: () {
+              onPressed: () async {
+                if (!isVisible) {
+                  // Authenticate before showing hidden field
+                  final authenticated = await _authenticateForSensitiveData();
+                  if (!authenticated) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Authentication required to view hidden field'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                    return;
+                  }
+                }
                 setState(() {
                   hiddenFieldVisibility[field.id] = !isVisible;
                 });
