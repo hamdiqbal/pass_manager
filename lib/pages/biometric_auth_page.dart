@@ -29,10 +29,12 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
     final user = FirebaseAuth.instance.currentUser;
     if (user != null) {
       _currentUserId = user.uid;
-      _checkBiometricAvailability();
+      await _checkBiometricAvailability();
     } else {
-      // No user, shouldn't happen but go to login
-      Navigator.pushReplacementNamed(context, '/');
+      // No user, go to login
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, '/');
+      }
     }
   }
 
@@ -45,73 +47,59 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
       final setupCompleted = await _biometricService.isBiometricSetupCompleted(_currentUserId!);
       final isEnabled = await _biometricService.isBiometricEnabled(_currentUserId!);
       
-      print('User: $_currentUserId - Authentication available: $isAvailable, enrolled: $hasEnrolled, setup completed: $setupCompleted, enabled: $isEnabled');
-      
       if (!isAvailable || !hasEnrolled) {
-        print('Device authentication not available or not enrolled, proceeding to home');
-        await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
-        await _biometricService.setBiometricEnabled(_currentUserId!, false);
+        // No biometric available, skip to home
         _proceedToHome();
         return;
       }
-      
-      // Get authentication description for better user experience
-      final authDescription = await _biometricService.getAuthenticationDescription();
-      final types = await _biometricService.getAvailableBiometrics();
-      
-      setState(() {
-        _biometricType = _biometricService.getBiometricTypeString(types);
-        _showEnableBiometric = !setupCompleted || !isEnabled;
-      });
-      
-      if (setupCompleted && isEnabled) {
-        // Automatically prompt for authentication if already enabled
-        _authenticateWithBiometric();
+
+      // Get biometric type for display
+      final biometrics = await _biometricService.getAvailableBiometrics();
+      if (biometrics.isNotEmpty) {
+        _biometricType = biometrics.first.toString().split('.').last;
+      }
+
+      if (mounted) {
+        setState(() {
+          _showEnableBiometric = !isEnabled && !setupCompleted;
+        });
+      }
+
+      // If already enabled, authenticate immediately
+      if (isEnabled) {
+        await _authenticateWithBiometric();
       }
     } catch (e) {
-      print('Error checking authentication availability: $e');
+      print('Error checking biometric availability: $e');
+      // On error, proceed to home
       _proceedToHome();
     }
   }
 
   Future<void> _authenticateWithBiometric() async {
+    if (_currentUserId == null) return;
+    
     setState(() {
       _isLoading = true;
     });
 
     try {
-      print('Starting device authentication...');
-      final bool authenticated = await _biometricService.authenticateWithBiometrics();
-      
-      if (authenticated) {
-        print('Device authentication successful');
+      final isAuthenticated = await _biometricService.authenticateWithBiometrics();
+
+      if (isAuthenticated) {
         _proceedToHome();
       } else {
-        print('Device authentication failed or cancelled - retrying...');
-        // Don't show error, immediately retry authentication
+        _showBiometricError();
+      }
+    } catch (e) {
+      print('Authentication error: $e');
+      _showBiometricError();
+    } finally {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        // Small delay to prevent immediate retry
-        await Future.delayed(const Duration(milliseconds: 500));
-        _authenticateWithBiometric();
-        return;
       }
-    } catch (e) {
-      print('Exception during device authentication: $e');
-      // Don't show error, immediately retry authentication
-      setState(() {
-        _isLoading = false;
-      });
-      await Future.delayed(const Duration(milliseconds: 500));
-      _authenticateWithBiometric();
-      return;
-    }
-    
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -123,281 +111,260 @@ class _BiometricAuthPageState extends State<BiometricAuthPage> {
     });
 
     try {
-      print('Enabling and authenticating with device security...');
-      final bool authenticated = await _biometricService.authenticateWithBiometrics();
-      
-      if (authenticated) {
-        print('Device authentication successful, enabling authentication');
+      final isAuthenticated = await _biometricService.authenticateWithBiometrics();
+
+      if (isAuthenticated) {
+        // Enable biometric and mark setup as completed
         await _biometricService.setBiometricEnabled(_currentUserId!, true);
         await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
+        
         _proceedToHome();
       } else {
-        print('Device authentication failed or cancelled during enable - retrying...');
-        // Don't show error, immediately retry authentication
+        _showBiometricError();
+      }
+    } catch (e) {
+      print('Enable biometric error: $e');
+      _showBiometricError();
+    } finally {
+      if (mounted) {
         setState(() {
           _isLoading = false;
         });
-        await Future.delayed(const Duration(milliseconds: 500));
-        _enableBiometricAndAuthenticate();
-        return;
       }
-    } catch (e) {
-      print('Exception during device authentication enable: $e');
-      // Don't show error, immediately retry authentication
-      setState(() {
-        _isLoading = false;
-      });
-      await Future.delayed(const Duration(milliseconds: 500));
-      _enableBiometricAndAuthenticate();
-      return;
-    }
-    
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
   void _proceedToHome() {
-    Navigator.pushReplacementNamed(context, '/home');
+    if (mounted) {
+      Navigator.pushReplacementNamed(context, '/home');
+    }
   }
 
   void _showBiometricError() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Authentication failed. Please try again.'),
-        backgroundColor: Colors.red[600],
-        action: SnackBarAction(
-          label: 'Try Again',
-          textColor: Colors.white,
-          onPressed: _authenticateWithBiometric,
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Authentication failed. Please try again.'),
+          backgroundColor: Colors.red[600],
+          action: SnackBarAction(
+            label: 'Try Again',
+            textColor: Colors.white,
+            onPressed: _authenticateWithBiometric,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
 
-  void _showNoBiometricDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          backgroundColor: Colors.white,
-          title: const Text(
-            'No Device Security Found',
-            style: TextStyle(color: Colors.black),
-          ),
-          content: const Text(
-            'Please set up a screen lock (fingerprint, face recognition, pattern, PIN, or password) in your device settings to secure the app.',
-            style: TextStyle(color: Colors.black87),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                _proceedToHome();
-              },
-              child: const Text(
-                'Continue',
-                style: TextStyle(color: Color(0xFF3E2411)),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  Future<void> _signOut() async {
-    await _authService.signOut();
-  }
-
-  void _skipBiometric() async {
+  Future<void> _skipBiometricSetup() async {
     if (_currentUserId == null) return;
-    
+
     await _biometricService.setBiometricEnabled(_currentUserId!, false);
     await _biometricService.setBiometricSetupCompleted(_currentUserId!, true);
     _proceedToHome();
   }
 
-  IconData _getAuthenticationIcon() {
-    switch (_biometricType) {
-      case 'Face ID':
-        return Icons.face;
-      case 'Fingerprint':
-        return Icons.fingerprint;
-      case 'Device Security':
-        return Icons.lock;
+  String _getBiometricIcon() {
+    switch (_biometricType.toLowerCase()) {
+      case 'face':
+      case 'faceid':
+        return '👤';
+      case 'fingerprint':
+      case 'touchid':
+        return '👆';
+      case 'iris':
+        return '👁️';
       default:
-        return Icons.security;
+        return '🔐';
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return PopScope(
-      canPop: false, // Prevent back navigation
-      child: Scaffold(
-        backgroundColor: Colors.white,
-        body: SafeArea(
-        child: SingleChildScrollView(
+    return Scaffold(
+      backgroundColor: const Color(0xFF1B1B1B),
+      body: SafeArea(
+        child: Padding(
           padding: const EdgeInsets.all(24.0),
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: MediaQuery.of(context).size.height - 
-                          MediaQuery.of(context).padding.top - 
-                          MediaQuery.of(context).padding.bottom - 48,
-            ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-              // Security Icon
+          child: Column(
+            children: [
+              const SizedBox(height: 40),
+              
+              // App Logo/Icon
+              Container(
+                width: 100,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color(0xFF2D2D2D),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: const Icon(
+                  Icons.security,
+                  color: Color(0xFF4CAF50),
+                  size: 50,
+                ),
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // App Title
+              const Text(
+                'Three Ace Pass Manager',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: 8),
+              
+              // Subtitle
+              const Text(
+                'Secure Password Management',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 16,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              
+              const SizedBox(height: 60),
+              
+              // Biometric Icon
               Container(
                 width: 120,
                 height: 120,
                 decoration: BoxDecoration(
-                  color: const Color(0xFF3E2411),
-                  borderRadius: BorderRadius.circular(30),
-                  boxShadow: [
-                    BoxShadow(
-                      color: const Color(0xFF3E2411).withOpacity(0.3),
-                      blurRadius: 30,
-                      offset: const Offset(0, 15),
-                    ),
-                  ],
+                  color: const Color(0xFF2D2D2D),
+                  shape: BoxShape.circle,
+                  border: Border.all(
+                    color: const Color(0xFF4CAF50),
+                    width: 2,
+                  ),
                 ),
-                child: const Icon(
-                  Icons.security,
-                  color: Colors.white,
-                  size: 60,
+                child: Center(
+                  child: Text(
+                    _getBiometricIcon(),
+                    style: const TextStyle(fontSize: 50),
+                  ),
                 ),
               ),
               
               const SizedBox(height: 32),
               
-              // Title
-              const Text(
-                'Secure Access',
-                style: TextStyle(
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-                textAlign: TextAlign.center,
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Subtitle
+              // Instructions
               Text(
-                _showEnableBiometric 
-                    ? 'Enable ${_biometricType == 'Device Security' ? 'device security' : _biometricType} for quick and secure access'
-                    : 'Use ${_biometricType == 'Device Security' ? 'your device security' : _biometricType} to access your vault',
+                _showEnableBiometric
+                    ? 'Enable $_biometricType for quick and secure access'
+                    : 'Use $_biometricType to access your vault',
                 style: const TextStyle(
-                  fontSize: 16,
-                  color: Colors.black87,
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.w500,
                 ),
                 textAlign: TextAlign.center,
               ),
               
-              const SizedBox(height: 48),
+              const SizedBox(height: 8),
               
-              // Authentication Icon - choose appropriate icon based on type
-              Icon(
-                _getAuthenticationIcon(),
-                color: const Color(0xFF3E2411),
-                size: 80,
+              const Text(
+                'Your passwords are protected with biometric authentication',
+                style: TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
+                textAlign: TextAlign.center,
               ),
               
-              const SizedBox(height: 48),
+              const Spacer(),
               
-              // Main Action Button
-              if (!_isLoading) ...[
-                SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    onPressed: _showEnableBiometric 
-                        ? _enableBiometricAndAuthenticate 
-                        : _authenticateWithBiometric,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF3E2411),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      elevation: 3,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Icon(
-                          _getAuthenticationIcon(),
-                          size: 24,
+              // Action Buttons
+              Column(
+                children: [
+                  if (!_isLoading) ...[
+                    // Primary Action Button
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: ElevatedButton(
+                        onPressed: _showEnableBiometric
+                            ? _enableBiometricAndAuthenticate
+                            : _authenticateWithBiometric,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4CAF50),
+                          foregroundColor: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          elevation: 0,
                         ),
-                        const SizedBox(width: 12),
-                        Text(
-                          _showEnableBiometric 
-                              ? 'Enable ${_biometricType == 'Device Security' ? 'Device Security' : _biometricType}'
-                              : 'Authenticate',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              _getBiometricIcon(),
+                              style: const TextStyle(fontSize: 20),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              _showEnableBiometric
+                                  ? 'Enable $_biometricType'
+                                  : 'Authenticate',
+                              style: const TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    
+                    const SizedBox(height: 16),
+                    
+                    // Skip Button (only show during setup)
+                    if (_showEnableBiometric)
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: TextButton(
+                          onPressed: _skipBiometricSetup,
+                          style: TextButton.styleFrom(
+                            foregroundColor: Colors.grey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                          child: const Text(
+                            'Skip for now',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ],
+                      ),
+                  ] else ...[
+                    // Loading State
+                    const SizedBox(
+                      height: 52,
+                      child: Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFF4CAF50)),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                
-                const SizedBox(height: 20),
-                
-                // Skip Button
-                TextButton(
-                  onPressed: _skipBiometric,
-                  child: const Text(
-                    'Skip Authentication',
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-                
-                const SizedBox(height: 12),
-                
-                // Sign Out Button
-                TextButton(
-                  onPressed: _signOut,
-                  child: const Text(
-                    'Sign Out',
-                    style: TextStyle(
-                      color: Color(0xFF3E2411),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
-                    ),
-                  ),
-                ),
-              ] else ...[
-                // Loading Indicator
-                const CircularProgressIndicator(
-                  color: Color(0xFF3E2411),
-                ),
-                const SizedBox(height: 20),
-                const Text(
-                  'Authenticating...',
-                  style: TextStyle(
-                    color: Colors.black87,
-                    fontSize: 16,
-                  ),
-                ),
-              ],
+                  ],
+                ],
+              ),
+              
+              const SizedBox(height: 20),
             ],
-          ), // Close Column
-        ), // Close ConstrainedBox
-      ), // Close SingleChildScrollView  
-    ), // Close SafeArea
-    ), // Close Scaffold
-    ); // Close PopScope
+          ),
+        ),
+      ),
+    );
   }
 }
